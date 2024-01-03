@@ -1,2 +1,1 @@
-# ts-practice
-练习项目
+# For TypeSpeed Book
