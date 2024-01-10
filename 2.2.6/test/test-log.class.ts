@@ -1,9 +1,9 @@
-import { onClass, log } from "../src/speed";
+import { onClass } from "../src/speed";
 
 @onClass
 export default class TestLog {
 
     constructor() {
-        log("TestLog constructor");
+        console.log("TestLog constructor");
     }
 }

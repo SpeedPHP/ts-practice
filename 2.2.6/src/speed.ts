@@ -1,9 +1,9 @@
 import "reflect-metadata";
 import BeanFactory from "./bean-factory.class";
-import LogFactory from "./log-factory.class";
+
 
 function onClass<T extends { new(...args: any[]): {} }>(constructor: T) {
-    log("decorator onClass: " + constructor.name);
+
     return class extends constructor {
         constructor(...args: any[]) {
             super(...args);
@@ -14,7 +14,7 @@ function onClass<T extends { new(...args: any[]): {} }>(constructor: T) {
 
 function bean(target: any, propertyName: string, descriptor: PropertyDescriptor) {
     let returnType = Reflect.getMetadata("design:returntype", target, propertyName);
-    log("decorator bean, the return Type is: " + returnType.name);
+    console.log("decorator bean, the return Type is: " + returnType.name);
     BeanFactory.putBean(returnType, target[propertyName]);
 }
 
@@ -37,15 +37,7 @@ function inject(): any {
     }
 }
 
-function log(message?: any, ...optionalParams: any[]) {
-    const logBean = BeanFactory.getBean(LogFactory);
-    if(logBean) {
-        const logObject = logBean();
-        logObject.log(message, ...optionalParams);
-    }else{
-        console.log(message, ...optionalParams);
-    }
-}
 
 
-export { onClass, bean, autoware, inject, log };
+
+export { onClass, bean, autoware, inject };
