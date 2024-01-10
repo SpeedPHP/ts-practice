@@ -4,10 +4,6 @@
 // const port: number = 3000;
 // const app: express.Application = express();
 
-// app.get("/", (req, res) => {
-//     res.send("Hello World!");
-// });
-
 // app.listen(port, () => {
 //     console.log("server start at port: " + port);
 // });
