@@ -32,14 +32,15 @@ export default class ExpressServer extends ServerFactory {
     // 设置默认中间件
     private setDefaultMiddleware() {
         // 模板配置
-        const viewConfig = {
-            "engine": "mustache",
-            "path": "/test/views",
-            "suffix": "html"
-        };
-        this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
-        this.app.set('view engine', viewConfig["suffix"]);
-        this.app.set('views', process.cwd() + viewConfig["path"]);
+        // TODO 3.5.3
+        // const viewConfig = {
+        //     "engine": "mustache",
+        //     "path": "/test/views",
+        //     "suffix": "html"
+        // };
+        // this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
+        // this.app.set('view engine', viewConfig["suffix"]);
+        // this.app.set('views', process.cwd() + viewConfig["path"]);
 
         setRouter(this.app);
     }

@@ -5,10 +5,10 @@ import { GetMapping } from "../src/route-mapping.decorator";
 export default class FirstPage {
 
 
-
-    @GetMapping("/first/renderTest")
-    public renderTest(req: any, res: any) {
-        res.render("index", {name:"zzz"});
-    }
+    // TODO 3.5.3
+    // @GetMapping("/first/renderTest")
+    // public renderTest(req: any, res: any) {
+    //     res.render("index", {name:"zzz"});
+    // }
 
 }
