@@ -1,0 +1,15 @@
+{
+    "view": {
+        "engine": "mustache",
+        "path": "./src/views",
+        "suffix": "html"
+    },
+
+    "compression": {
+        "level": 9
+    },
+    "cookie": {
+        "secret": "catme",
+        "options": {}
+    }
+}
