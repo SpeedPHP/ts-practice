@@ -1,0 +1,8 @@
+{
+    "view": {
+        "engine": "mustache",
+        "path": "./src/views",
+        "suffix": "html"
+    },
+    "socket":{}
+}
