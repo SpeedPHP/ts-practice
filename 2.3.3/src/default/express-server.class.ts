@@ -5,11 +5,6 @@ import { setRouter } from "../route-mapping.decorator";
 import { bean, log, value } from "../speed";
 
 export default class ExpressServer extends ServerFactory {
-
-    // TODO: 2.3.3
-    // @value("view")
-    // public view: string;
-
     @bean
     public getSever(): ServerFactory {
         const server = new ExpressServer();
@@ -32,12 +27,6 @@ export default class ExpressServer extends ServerFactory {
     }
 
     private setDefaultMiddleware() {
-        // TODO: 2.3.3
-        // const viewConfig = this.view;
-        // this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
-        // this.app.set('view engine', viewConfig["suffix"]);
-        // this.app.set('views', process.cwd() + viewConfig["path"]);
-
         setRouter(this.app);
     }
 }
