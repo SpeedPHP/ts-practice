@@ -18,7 +18,7 @@ export default class ExpressServer extends ServerFactory {
         this.middlewareList.forEach(middleware => {
             app.use(middleware);
         });
-        //TODO 3.2.1
+        //TODO 3.2.1 介绍req和res
         // app.get('/', (req, res) => {
         //     res.send('Hello World!');
         // });
