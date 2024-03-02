@@ -1,25 +1,30 @@
-// TODO 3.6
-// import { log, onClass } from "../src/speed";
-// import { GetMapping } from "../src/route-mapping.decorator";
+import { GetMapping } from "../src/route-mapping.decorator";
+import { onClass } from "../src/speed";
 
-// @onClass
-// export default class SecondPage {
 
-//     @GetMapping("/second/setCookie")
-//     setCookiePage(req, res) {
-//         res.cookie("name", "zzz");
-//         return "setCookie";
-//     }
+@onClass
+export default class SecondPage {
 
-//     @GetMapping("/second/getCookie")
-//     getCookiePage(req, res) {
-//         const cookieName = req.cookies.name;
-//         return "getCookie: " + cookieName;
-//     }
+  @GetMapping("/second/compression")
+  testCompression(req, res) {
+    const result = Array(1026).join('a').slice(0,-1);
+    return result;
+  }
 
-//     @GetMapping("/second/testSession")
-//     testForSession(req, res) {
-//         req.session.view = req.session.view ? req.session.view + 1 : 1;
-//         return "testForSession: " + req.session.view;
-//     }
-// }
+  @GetMapping("/second/session")
+  testSession(req, res) {
+    req.session.counter = req.session.counter ? req.session.counter + 1 : 1;
+    return "Counter Now is :" + req.session.counter;
+  }
+
+  @GetMapping("/second/set_cookie")
+  setCookiePage(req, res) {
+    res.cookie("Hello", "world");
+    return "set cookie";
+  }
+
+  @GetMapping("/second/get_cookie")
+  getCookiePage(req, res) {
+    return "get cookie:" + req.cookies.Hello;
+  }
+}

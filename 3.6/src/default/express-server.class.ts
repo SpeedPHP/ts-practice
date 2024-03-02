@@ -13,20 +13,21 @@ export default class ExpressServer extends ServerFactory {
     @value("view")
     public view: string;
 
-    // @value("static")
-    // private static: string;
+    @value("static") // 静态资源的路径
+    private static: string;
 
-    // @value("favicon")
-    // private favicon: string;
+    @value("favicon") // 站点图标
+    private favicon: string;
 
-    // @value("compression")
-    // private compression: object;
+    @value("compression") // 压缩配置
+    private compression: object;
 
-    // @value("cookie")
-    // private cookieConfig: object;
+    @value("cookie") // Cookie
+    private cookieConfig: object;
 
-    // @value("session")
-    // private session: object;
+    @value("session") // Session
+    private session: object;
+
 
     @bean
     public getSever(): ServerFactory {
@@ -50,37 +51,35 @@ export default class ExpressServer extends ServerFactory {
     }
 
     private setDefaultMiddleware() {
-        if (this.view) {
-            const viewConfig = this.view;
-            this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
-            this.app.set('view engine', viewConfig["suffix"]);
-            this.app.set('views', process.cwd() + viewConfig["path"]);
+
+        // 静态资源
+        if(this.static) {
+            const staticPath = process.cwd() + this.static;
+            this.app.use(express.static(staticPath)); // 设置中间件
         }
 
-        // TODO 3.6
-        // if(this.session) {
-        //     const sessionConfig = this.session;
-        //     if(sessionConfig["trust proxy"] === 1){
-        //         this.app.set('trust proxy', 1);
-        //     }
-        //     this.app.use(expressSession(sessionConfig));
-        // }
+        if(this.favicon) {
+            const faviconPath = process.cwd() + this.favicon;
+            this.app.use(serveFavicon(faviconPath));
+        }
 
-        // if(this.static) {
-        //     const staticPath = process.cwd() + this.static;
-        //     this.app.use(express.static(staticPath))
-        // }
+        if(this.compression){
+            this.app.use(compression(this.compression));
+        }
 
-        // if(this.favicon) {
-        //     const faviconPath = process.cwd() + this.favicon;
-        //     this.app.use(serveFavicon(faviconPath));
-        // }
+        if(this.cookieConfig) {
+            this.app.use(
+                cookieParser(this.cookieConfig["secret"] || undefined, this.cookieConfig["options"] || {})
+            );
+        }
 
-        // if(this.compression) {
-        //     this.app.use(compression(this.compression));
-        // }
-
-        // this.app.use(cookieParser(this.cookieConfig["secret"] || undefined, this.cookieConfig["options"] || {}));
+        if(this.session) {
+            const sessionConfig = this.session;
+            if(sessionConfig["trust proxy"] === 1){
+                this.app.set("trust proxy", 1);
+            }
+            this.app.use(expressSession(sessionConfig));
+        }
 
 
         setRouter(this.app);
