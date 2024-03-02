@@ -24,6 +24,30 @@ export default class ExpressServer extends ServerFactory {
             this.app.use(middleware);
         });
         this.setDefaultMiddleware();
+        // const fs = require("fs");
+        // this.app.engine("ntl", (filePath, options, callback) => {
+        //     fs.readFile(filePath, (err, content) => {
+        //         if(err) return callback(err)
+        //         const rendered = content.toString()
+        //             .replace("#title#", `<title>${options["title"]}</title>`)
+        //             .replace("#message#", `<H1>${options["message"]}</H1>`)
+        //         return callback(null, rendered);
+        //     })
+        // })
+        // this.app.set('views', "./test/views")
+        // this.app.set('view engine', 'ntl')
+
+        const viewConfig = {
+            "engine" : "mustache",
+            "path": "/test/views",
+            "suffix": "html"
+        }
+
+        this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
+        this.app.set("view engine", viewConfig["suffix"]);
+        this.app.set("views", process.cwd() + viewConfig["path"])
+
+
         this.app.listen(port, () => {
             log("server start at port: " + port);
         });
@@ -31,46 +55,8 @@ export default class ExpressServer extends ServerFactory {
 
     // 设置默认中间件
     private setDefaultMiddleware() {
-        // 模板配置
-        // TODO 3.5.3
-        // const viewConfig = {
-        //     "engine": "mustache",
-        //     "path": "/test/views",
-        //     "suffix": "html"
-        // };
-        // this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
-        // this.app.set('view engine', viewConfig["suffix"]);
-        // this.app.set('views', process.cwd() + viewConfig["path"]);
 
         setRouter(this.app);
     }
-    // TODO 3.5.3
-    // public start(port: number) {
-    //     const app: express.Application = express();
-    //     this.middlewareList.forEach(middleware => {
-    //         app.use(middleware);
-    //     });
-    //     setRouter(app);
-    //     // 使用 fs 库
-    //     const fs = require('fs')
-    //     // 配置模板引擎
-    //     app.engine('ntl', (filePath, options, callback) => {
-    //         // 通过 fs 读取模板文件
-    //         fs.readFile(filePath, (err, content) => {
-    //             if (err) return callback(err)
-    //             // 进行简单的替换操作
-    //             const rendered = content.toString()
-    //                 .replace('#title#', `<title>${options["title"]}</title>`)
-    //                 .replace('#message#', `<h1>${options["message"]}</h1>`)
-    //             return callback(null, rendered)
-
-    //         })
-    //     })
-    //     // 配置模板目录和模板文件后缀
-    //     app.set('views', './test') // specify the views directory
-    //     app.set('view engine', 'ntl') // register the template engine
-    //     app.listen(port, () => {
-    //         log("server start at port: " + port);
-    //     });
-    // }
+  
 }

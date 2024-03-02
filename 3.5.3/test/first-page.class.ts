@@ -4,11 +4,13 @@ import { GetMapping } from "../src/route-mapping.decorator";
 @onClass
 export default class FirstPage {
 
+  @GetMapping("/")
+  public index(req, res) {
+    res.render("index", {"title": "你好", "message": "我是模板引擎"})
+  }
 
-    // TODO 3.5.3
-    // @GetMapping("/first/renderTest")
-    // public renderTest(req: any, res: any) {
-    //     res.render("index", {name:"zzz"});
-    // }
-
+  @GetMapping("/mu")
+  public mu(req, res) {
+    res.render("index", {"name": "模板引擎"})
+  }
 }
