@@ -8,9 +8,7 @@ const routerMapper = {
   "post": {},
   "all": {}
 };
-// TODO 3.4
-// const routerParams = {};
-// const routerParamsTotal = {};
+
 const routerMiddleware = {};
 function setRouter(app: express.Application) {
   ["get", "post", "all"].forEach(method => {
@@ -36,19 +34,14 @@ function mapperFunction(method: string, value: string) {
       "invoker": async (req, res, next) => {
         const routerBean = getComponent(target.constructor);
         try {
-          // TODO: 3.4
-          // let paramTotal = routerBean[propertyKey].length;
-          // if(routerParamsTotal[[target.constructor.name, propertyKey].toString()]){
-          //   paramTotal = Math.max(paramTotal, routerParamsTotal[[target.constructor.name, propertyKey].toString()]);
-          // }
+          let paramTotal = routerBean[propertyKey].length;
           const args = [req, res, next];
-          // if(paramTotal > 0) {
-          //   for(let i = 0; i < paramTotal; i++) {
-          //     if(routerParams[[target.constructor.name, propertyKey, i].toString()]){
-          //       args[i] = routerParams[[target.constructor.name, propertyKey, i].toString()](req, res, next);
-          //     }
-          //   }
-          // }
+          for(let i = 0; i < paramTotal; i++) {
+            if(routerParams[[target.constructor.name, propertyKey, i].toString()]){
+              args[i] = routerParams[[target.constructor.name, propertyKey, i].toString()](req,res,next);
+            }
+          }
+
           const testResult = await routerBean[propertyKey].apply(routerBean, args);
           if (typeof testResult === "object") {
             res.json(testResult);
@@ -126,63 +119,46 @@ function after(constructorFunction, methodName: string) {
       })
   };
 }
-// TODO: 3.4
-// // Request对象的参数装饰器
-// function req(target: any, propertyKey: string, parameterIndex: number) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   routerParams[key] = (req, res, next) => req;
-// }
+const routerParams = {};
+function req(target, propertyKey, parameterIndex) {
+  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+  routerParams[key] = (req, res, next) => req;
+}
 
-// // Response对象的参数装饰器
-// function res(target: any, propertyKey: string, parameterIndex: number) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   routerParams[key] = (req, res, next) => res;
-// }
+function res(target, propertyKey, parameterIndex) {
+  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+  routerParams[key] = (req, res, next) => res;
+}
 
-// // Next函数的参数装饰器
-// function next(target: any, propertyKey: string, parameterIndex: number) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   routerParams[key] = (req, res, next) => next;
-// }
+function getParamInFunction(fn: Function, index: number) {
+  const code = fn.toString().replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg, '').replace(/=>.*$/mg, '').replace(/=[^,]+/mg, '');
+  const result = code.slice(code.indexOf('(') + 1, code.indexOf(')')).match(/([^\s,]+)/g);
+  return result[index] || null;
+}
 
-// // 取得请求体内容的参数装饰器
-// function reqBody(target: any, propertyKey: string, parameterIndex: number) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   routerParams[key] = (req, res, next) => req.body;
-// }
+function reqQuery(target, propertyKey, parameterIndex) {
+  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+  const paramName = getParamInFunction(target[propertyKey], parameterIndex);
+  routerParams[key] = (req, res, next) => req.query[paramName];
+}
 
-// // 取得请求属性的参数装饰器
-// function reqParam(target: any, propertyKey: string, parameterIndex: number) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   const paramName = getParamInFunction(target[propertyKey], parameterIndex);
-//   routerParams[key] = (req, res, next) => req.params[paramName];
-// }
+function reqBody(target, propertyKey, parameterIndex) {
+  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+  routerParams[key] = (req, res, next) => req.body;
+}
 
-// function getParamInFunction(fn: Function, index: number) {
-//   const code = fn.toString().replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg, '').replace(/=>.*$/mg, '').replace(/=[^,]+/mg, '');
-//   const result = code.slice(code.indexOf('(') + 1, code.indexOf(')')).match(/([^\s,]+)/g);
-//   return result[index] || null;
-// }
-
-// // 取得Query属性值的参数装饰器
-// function reqQuery(target: any, propertyKey: string, parameterIndex: number) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   const paramName = getParamInFunction(target[propertyKey], parameterIndex);
-//   routerParams[key] = (req, res, next) => req.query[paramName];
-// }
-
-// // 取得表单属性值的参数装饰器
-// function reqForm(paramName: string) {
-//   return (target: any, propertyKey: string, parameterIndex: number) => {
-//     const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//     routerParams[key] = (req, res, next) => req.body[paramName];
-//   }
-// }
+function reqForm(paramName) {
+  return function(target, propertyKey, parameterIndex) {
+    const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+    routerParams[key] = (req, res, next) => req.body[paramName];
+  }
+}
 
 const getMapping = (value: string) => mapperFunction("get", value);
 const postMapping = (value: string) => mapperFunction("post", value);
 const requestMapping = (value: string) => mapperFunction("all", value);
 
-export { 
-  //next, reqBody, reqQuery, reqForm, reqParam, req, req as request, res, res as response, 
-  before, after, getMapping, postMapping, requestMapping, setRouter, upload, jwt };
+export {   before, after, getMapping, postMapping, requestMapping, setRouter, upload, jwt,
+  req, reqQuery, res, reqBody
+
+};
