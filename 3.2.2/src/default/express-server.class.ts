@@ -18,10 +18,12 @@ export default class ExpressServer extends ServerFactory {
         this.middlewareList.forEach(middleware => {
             app.use(middleware);
         });
-        //TODO 3.2.2 演示路径适配
-        // app.get('/', (req, res) => {
-        //     res.send('Hello World!');
-        // });
+        app.get("/:id-:page.html", (req, res) => {
+            console.log(req.params["id"])
+            console.log(req.params["page"])
+            console.log(req.params)
+            res.send('Hello World!');
+        });
         app.listen(port, () => {
             log("server start at port: " + port);
         });

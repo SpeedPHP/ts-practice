@@ -1,15 +1,20 @@
-// TODO: 3.2.3
-// import { log } from "../src/speed";
-// import { GetMapping } from "../src/route-mapping.decorator";
+import { GetMapping, RequestMapping } from "../src/route-mapping.decorator";
 
+export default class FirstPage {
 
+  @GetMapping("/first")
+  public index(req, res) {
+    res.send("Hello World by First Page");
+  }
 
-// export default class FirstPage {
+  @RequestMapping("/myPost")
+  public mypost(req, res) {
+    res.send("Hello World by POST");
+  }
 
-//     @GetMapping("/first")
-//     public index(req: any, res: any) {
-//         log("FirstPage index running");
-//         res.send("FirstPage index running");
-//     }
-
-// }
+  @GetMapping("/page-:id.html")
+  public page(req, res) {
+    console.log(req.params["id"]);
+    res.send("Hello World by POST");
+  }
+}

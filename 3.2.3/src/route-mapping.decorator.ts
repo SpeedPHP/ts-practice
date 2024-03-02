@@ -1,40 +1,38 @@
-// TODO: 3.2.3
-// import * as express from "express";
-// const routerMapper = {
-//   "get" : {},
-//   "post" : {},
-//   "all" : {}
-// }
 
-// function setRouter(app: express.Application) {
-//   for (let key in routerMapper["get"]) {
-//     app.get(key, routerMapper["get"][key]);
-//   }
-//   for (let key in routerMapper["post"]) {
-//     app.post(key, routerMapper["post"][key]);
-//   }
-//   for (let key in routerMapper["all"]) {
-//     app.all(key, routerMapper["all"][key]);
-//   }
-// }
+const routerMapper = {
+  "get": {},
+  "post": {},
+  "all": {}
+}
 
-// function GetMapping(value: string) {
-//   return function (target, propertyKey: string) {
-//     routerMapper["get"][value] = target[propertyKey];
-//   };
-// }
+function setRouter(app) {
+  for(let url in routerMapper["get"]){
+    app.get(url, routerMapper["get"][url]);
+  }
+  for(let url in routerMapper["post"]){
+    app.post(url, routerMapper["post"][url]);
+  }
+  for(let url in routerMapper["all"]){
+    app.all(url, routerMapper["all"][url]);
+  }
+}
 
-// function PostMapping(value: string) {
-//   return function (target, propertyKey: string) {
-//     routerMapper["post"][value] = target[propertyKey];
-//   };
-// }
+function GetMapping(url) {
+  return function(target, propertyKey) {
+    routerMapper["get"][url] = target[propertyKey]
+  }
+}
 
-// function RequestMapping(value: string) {
-//   return function (target, propertyKey: string) {
-//     routerMapper["all"][value] = target[propertyKey];
-//   };
-// }
+function PostMapping(url) {
+  return function(target, propertyKey) {
+    routerMapper["post"][url] = target[propertyKey]
+  }
+}
 
+function RequestMapping(url) {
+  return function(target, propertyKey) {
+    routerMapper["all"][url] = target[propertyKey]
+  }
+}
 
-// export { GetMapping, PostMapping, RequestMapping, setRouter };
+export {GetMapping, setRouter, PostMapping, RequestMapping}

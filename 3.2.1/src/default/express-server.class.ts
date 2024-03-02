@@ -1,6 +1,7 @@
 import * as express from "express";
 import ServerFactory from "../factory/server-factory.class";
 import { bean, log } from "../speed";
+import * as cookieParser from "cookie-parser";
 
 export default class ExpressServer extends ServerFactory {
     // 提供Web服务对象
@@ -18,10 +19,11 @@ export default class ExpressServer extends ServerFactory {
         this.middlewareList.forEach(middleware => {
             app.use(middleware);
         });
-        //TODO 3.2.1 介绍req和res
-        // app.get('/', (req, res) => {
-        //     res.send('Hello World!');
-        // });
+        app.use(express.urlencoded({extended: true}));
+        app.use(cookieParser())
+        app.get('/index.html', (req, res) => {
+            res.redirect("https://www.baidu.com");
+        });
         app.listen(port, () => {
             log("server start at port: " + port);
         });

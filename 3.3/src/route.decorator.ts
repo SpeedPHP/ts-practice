@@ -90,37 +90,33 @@ function jwt(jwtConfig) {
   }
 }
 
-function before(constructorFunction, methodName: string) {
+function before(constructorFunction, methodName) {
   const targetBean = getComponent(constructorFunction);
-  return function (target, propertyKey: string) {
-      const currentMethod = targetBean[methodName];
-      if(currentMethod.length > 0){
-        routerParamsTotal[[constructorFunction.name, methodName].toString()] = currentMethod.length;
+  return function (target, propertyKey) {
+    const currentMethod = targetBean[methodName];
+    Object.assign(targetBean, {
+      [methodName]: function(...args) {
+        target[propertyKey](...args); // 这里是切面程序，AopTest - FirstIndex
+        return currentMethod.apply(targetBean, args); // index 在 targetBean（FirstPage）调用，参数是 args
       }
-      Object.assign(targetBean, {
-          [methodName]: function (...args) {
-              target[propertyKey](...args);
-              return currentMethod.apply(targetBean, args);
-          }
-      })
-  };
+    })
+  }
 }
-
-function after(constructorFunction, methodName: string) {
+/**
+ * 后置
+ */
+function after(constructorFunction, methodName) {
   const targetBean = getComponent(constructorFunction);
-  return function (target, propertyKey: string) {
-      const currentMethod = targetBean[methodName];
-      if(currentMethod.length > 0){
-        routerParamsTotal[[constructorFunction.name, methodName].toString()] = currentMethod.length;
+  return function (target, propertyKey) {
+    const currentMethod = targetBean[methodName];
+    Object.assign(targetBean, {
+      [methodName]: function(...args) {
+        const result = currentMethod.apply(targetBean, args); // index 在 targetBean（FirstPage）调用，参数是 args
+        target[propertyKey](...args); // 这里是切面程序，AopTest - FirstIndex
+        return result;
       }
-      Object.assign(targetBean, {
-          [methodName]: function (...args) {
-              const result = currentMethod.apply(targetBean, args);
-              const afterResult = target[propertyKey](result);
-              return afterResult ?? result;
-          }
-      })
-  };
+    })
+  }
 }
 
 function req(target: any, propertyKey: string, parameterIndex: number) {
@@ -172,4 +168,4 @@ const getMapping = (value: string) => mapperFunction("get", value);
 const postMapping = (value: string) => mapperFunction("post", value);
 const requestMapping = (value: string) => mapperFunction("all", value);
 
-export { next, reqBody, reqQuery, reqForm, reqParam, req, req as request, res, res as response, before, after, getMapping, postMapping, requestMapping, setRouter, upload, jwt };
+export { next, reqBody, reqQuery, reqForm, reqParam, req, req as request, res, res as response, getMapping, postMapping, requestMapping, setRouter, upload, jwt, before, after };
