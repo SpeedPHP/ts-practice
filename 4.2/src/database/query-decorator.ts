@@ -1,38 +1,38 @@
-import { createPool, ResultSetHeader } from 'mysql2';
-import { config } from '../speed';
-// TODO
-// const pool = createPool(config("mysql")).promise();
-//
-// function Insert(sql: string) {
-//     return (target, propertyKey: string, descriptor: PropertyDescriptor) => {
-//         descriptor.value = async (...args: any[]) => {
-//             const result: ResultSetHeader = await queryForExecute(sql);
-//             return result.insertId;
-//         };
-//     };
-// }
+import {createPool, ResultSetHeader} from 'mysql2';
+import { config } from "../speed";
 
-// function Update(sql: string) {
-//     return (target, propertyKey: string, descriptor: PropertyDescriptor) => {
-//         descriptor.value = async (...args: any[]) => {
-//             const result: ResultSetHeader = await queryForExecute(sql);
-//             return result.affectedRows;
-//         };
-//     };
-// }
+const pool = createPool(config("mysql")).promise();
 
-// function Select(sql: string) {
-//     return (target, propertyKey: string, descriptor: PropertyDescriptor) => {
-//         descriptor.value = async (...args: any[]) => {
-//             const [rows] = await pool.query(sql);
-//             return rows;
-//         };
-//     }
-// }
+function Insert(sql) {
+  return (target, properKey, descriptor) => {
+    descriptor.value = async () => {
+      const result: ResultSetHeader = await queryForExecute(sql);
+      return result.insertId; // 新增的主键id
+    }
+  }
+}
 
-// async function queryForExecute(sql: string): Promise<ResultSetHeader> {
-//     const [result] = await pool.query(sql);
-//     return <ResultSetHeader>result;
-// }
+function Update(sql) {
+  return (target, properKey, descriptor) => {
+    descriptor.value = async () => {
+      const result: ResultSetHeader = await queryForExecute(sql);
+      return result.affectedRows; // 被影响的行数，修改了多少行记录
+    }
+  }
+}
 
-//export { Insert, Update, Update as Delete, Select };
+async function queryForExecute(sql): Promise<ResultSetHeader> {
+  const [result] = await pool.query(sql);
+  return <ResultSetHeader>result;
+}
+
+function Select(sql) {
+  return (target, properKey, descriptor) => {
+    descriptor.value = async () => {
+      const [rows] = await pool.query(sql);
+      return rows; 
+    }
+  }
+}
+
+export {Insert, Update, Update as Delete, Select};

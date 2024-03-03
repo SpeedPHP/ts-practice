@@ -1,37 +1,34 @@
-//import { Insert, Update, Select } from "../src/database/query-decorator";
-import { GetMapping } from "../src/route-mapping.decorator";
-import { onClass, log } from "../src/speed";
+import {onClass, log} from "../src/speed";
+import {GetMapping} from "../src/route-mapping.decorator";
+import {Insert, Update, Select} from "../src/database/query-decorator";
 
 @onClass
-export default class TestDatabase {
-    // TODO
-    // @GetMapping("/db/insert")
-    // async insert(req, res) {
-    //     const newId = await this.addRow();
-    //     log("Insert newId: " + newId);
-    //     res.send("Insert success");
-    // }
+export default class TestDatabase{
 
-    // @GetMapping("/db/update")
-    // async update(req, res) {
-    //     const affectedRows = await this.editRow();
-    //     log("Update rows: " + affectedRows);
-    //     res.send("update success");
-    // }
+    @GetMapping("/db/insert")
+    async insert(req, res) {
+        const newId = await this.addRow();
+        res.send("Insert: " + newId);
+    }
 
-    // @GetMapping("/db/select")
-    // async select(req, res) {
-    //     const rows = await this.selectRow();
-    //     log("select rows: " + rows);
-    //     res.send(rows);
-    // }
+    @GetMapping("/db/update")
+    async update(req, res) {
+        const rows = await this.editRow();
+        res.send("Updated: " + rows);
+    }
 
-    // @Insert("Insert into `user` (name) values ('test')")
-    // private async addRow() {}
+    @GetMapping("/db/select")
+    async select(req, res) {
+        const rows = await this.selectRows();
+        res.send(rows);
+    }
 
-    // @Update("Update `user` set `name` = 'test5' where id = 5")
-    // private async editRow() {}
+    @Insert("insert into `user` (name) values ('mytest')")
+    private async addRow() {}
 
-    // @Select("Select * from `user`")
-    // private async selectRow() {}
+    @Update("update `user` set `name` = 'test for me' where id = 3")
+    private async editRow() {}
+
+    @Select("select * from `user`")
+    private async selectRows() {}
 }
