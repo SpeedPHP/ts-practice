@@ -82,51 +82,33 @@ export default class ExpressServer extends ServerFactory {
 
         this.app.use(cookieParser(this.cookieConfig["secret"] || undefined, this.cookieConfig["options"] || {}));
 
-
+        // 设置路由页面
         setRouter(this.app);
 
-        // TODO 3.9
-        // this.app.use((req, res, next) => {
-        //     res.status = 404;
-        //     res.write("404 Not Found");
-        //     res.end();
-        // });
-        // this.app.use((err, req, res, next) => {
-        //     if (!err) {
-        //         next();
-        //     }
-        //     res.status(err.status || 500);
-        //     res.send("500 Server Error");
-        // });
-
-        // this.app.use((req, res, next) => {
-        //     error("404 not found, for page: " + req.url);
-        //     if (req.accepts('html')) {
-        //         res.render(process.cwd() + "/static/error-page/404.html");
-        //     } else if (req.accepts('json')) {
-        //         // 当浏览器需要JSON格式时，则返回JSON错误提示
-        //         res.json({ error: 'Not found' });
-        //     } else {
-        //         // 默认情况返回文本类型错误提示
-        //         res.type('txt').send('Not found');
-        //     }
-        // });
-
-        // this.app.use((err, req, res, next) => {
-        //     if (!err) {
-        //         next();
-        //     }
-        //     error(err);
-        //     res.status(err.status || 500);
-        //     if (req.accepts('html')) {
-        //         res.render(process.cwd() + "/static/error-page/500.html");
-        //     } else if (req.accepts('json')) {
-        //         // 当浏览器需要JSON格式时，则返回JSON错误提示
-        //         res.json({ error: 'Internal Server Error' });
-        //     } else {
-        //         // 默认情况返回文本类型错误提示
-        //         res.type('txt').send('Internal Server Error');
-        //     }
-        // });
+        // 404 处理，找不到页面
+        this.app.use((req, res, next) => {
+            res.status(404);
+            if(req.accepts("html")){
+                res.render(process.cwd() + "/static/error-page/404.html");
+            }else if(req.accepts("json")) {
+                res.json({error: "Not Found"});
+            }else{
+                res.type("txt").send("Not Found");
+            }
+        })
+        // 500 处理，出现错误
+        this.app.use((err, req, res, next) => {
+            if(!err) {
+                next();
+            }
+            res.status(err.status || 500);
+            if(req.accepts("html")){
+                res.render(process.cwd() + "/static/error-page/500.html");
+            }else if(req.accepts("json")) {
+                res.json({error: "Server Error"});
+            }else{
+                res.type("txt").send("Server Error");
+            }
+        });
     }
 }
