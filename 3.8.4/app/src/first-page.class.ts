@@ -1,29 +1,28 @@
-// TODO: 3.8.4
-// import * as jwttoken from "jsonwebtoken";
-// import { component, getMapping } from "../../src/typespeed";
+import { component, getMapping, value } from "../../src/typespeed";
+import * as jwttoken from "jsonwebtoken";
 
-// @component
-// export default class FirstPage {
+@component
+export default class FirstPage {
 
-//     @getMapping("/first")
-//     public index(req: any, res: any) {
-//         res.send("FirstPage index running");
-//     }
+    @value("jwt.secret")
+    private secret:string;
 
-//     @getMapping("/session")
-//     testForSession(req, res) {
-//         req.session.view = req.session.view ? req.session.view + 1 : 1;
-//         return "testForSession: " + req.session.view;
-//     }
+    @getMapping("/")
+    public index(req: any, res: any) {
+        res.send("FirstPage index running");
+    }
 
-//     @getMapping("/login")
-//     login() {
-//         const token = jwttoken.sign({ foo: 'bar' }, 'shhhhhhared-secret');
-//         /**
-//          * 将这里获得的token，放到header的Authorization中。
-//          * 值是：Bearer + token
-//          */
-//         return token;
-//     }
+    @getMapping("/session")
+    testForSession(req, res) {
+        req.session.view = req.session.view ? req.session.view + 1 : 1;
+        res.end("testForSession: " + req.session.view);
+    }
 
-// }
+    @getMapping("/login")
+    login() {
+      const token = jwttoken.sign({
+        user: 'myname'
+      }, this.secret);
+      return token;
+    }
+}

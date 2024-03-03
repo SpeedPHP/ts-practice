@@ -18,6 +18,6 @@
     "jwt" : {
         "secret": "shhhhhhared-secret", 
         "algorithms": ["HS256"],
-        "ignore": ["/login", "/second/testSession"]
+        "ignore": ["/login"]
     }
 }

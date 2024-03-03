@@ -11,7 +11,7 @@ import { setRouter } from "../route.decorator";
 import { value } from "../typespeed";
 import { bean, log, error, autoware } from "../core.decorator";
 import { Redis } from "./redis.class";
-//import AuthenticationFactory from "../factory/authentication-factory.class";
+import AuthenticationFactory from "../factory/authentication-factory.class";
 
 export default class ExpressServer extends ServerFactory {
 
@@ -37,10 +37,10 @@ export default class ExpressServer extends ServerFactory {
     private redisConfig: object;
 
     @autoware
-    private redisClient: Redis;
+    public authentication: AuthenticationFactory;
 
-    // @autoware
-    // public authentication: AuthenticationFactory;
+    @autoware
+    private redisClient: Redis;
 
     @bean
     public getSever(): ServerFactory {
@@ -98,15 +98,16 @@ export default class ExpressServer extends ServerFactory {
         if (this.cookieConfig) {
             this.app.use(cookieParser(this.cookieConfig["secret"] || undefined, this.cookieConfig["options"] || {}));
         }
-        // TODO: 3.8.4
-        //this.app.use(this.authentication.preHandle);
 
+        // 拦截器前置控制
+        this.app.use(this.authentication.preHandle);
         if (this.static) {
             const staticPath = process.cwd() + this.static;
             this.app.use(express.static(staticPath))
         }
         setRouter(this.app);
-        //this.app.use(this.authentication.afterCompletion);
+        // 拦截器后置控制
+        this.app.use(this.authentication.afterCompletion);
         
         const errorPageDir = __dirname + "/pages";
         this.app.use((req, res) => {
