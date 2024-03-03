@@ -1,43 +1,40 @@
-// TODO
-// import CacheFactory from "../factory/cache-factory.class";
-// import * as cache from "node-cache";
-// import { value, bean } from "../../src/speed";
+import * as cache from 'node-cache';
+import CacheFactory from '../factory/cache-factory.class';
+import {value, bean} from "../../src/speed";
 
-// export default class NodeCache extends CacheFactory {
-//     private NodeCache: any;
-//     private nodeCacheOptions;
+export default class NodeCache extends CacheFactory {
 
-//     // 注入缓存配置
-//     @value("cache")
-//     private config : object;
+  private nodeCache;
+  private nodeCacheOptions;
 
-//     // 实例化当前缓存对象
-//     constructor() {
-//         super();
-//         this.nodeCacheOptions = this.config || { stdTTL: 3600 };
-//         this.NodeCache = new cache();
-//     }
+  @value("cache")
+  private config;
 
-//     // 提供缓存对象
-//     @bean
-//     public getNodeCache(): CacheFactory {
-//         return new NodeCache();
-//     }
+  constructor() {
+    super();
+    this.nodeCacheOptions = this.config || {stdTTL: 3600};
+    this.nodeCache = new cache();
+  }
 
-//     public get(key: string) {
-//         return this.NodeCache.get(key);
-//     }
-//     public set(key: string, value: any, expire?: number): void {
-//         this.NodeCache.set(key, value, expire || this.nodeCacheOptions["stdTTL"]);
-//     }
-//     public del(key: string): void {
-//         this.NodeCache.del(key);
-//     }
-//     public has(key: string): boolean {
-//         return this.NodeCache.has(key);
-//     }
-//     public flush(): void {
-//         this.NodeCache.flushAll();
-//     }
+  @bean
+  public getNodeCache():CacheFactory {
+    return new NodeCache();
+  }
 
-// }
+  get(key) {
+    return this.nodeCache.get(key);
+  }
+  set(key, value, expire?) {
+    this.nodeCache.set(key, value, expire || this.nodeCacheOptions["stdTTL"]);
+  }
+  del(key) {
+    this.nodeCache.del(key);
+  }
+  has(key) {
+    return this.nodeCache.has(key);
+  }
+  flush() {
+    this.nodeCache.flushAll();
+  }
+  
+}
