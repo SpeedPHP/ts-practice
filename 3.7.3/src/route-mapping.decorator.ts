@@ -7,18 +7,31 @@ const routerMapper = {
   "all": {}
 };
 
-//const uploadMapper = [];
+const uploadMapper = [];
+
+function upload(target, propertyKey) {
+  uploadMapper.push(target.constructor.name + "#" + propertyKey);
+}
+
+function uploadMiddleware(req, res, next) {
+  const form = new multiparty.Form();
+  form.parse(req, (err, fields, files) => {
+    req.files = files["upload"] || undefined;
+    next(); // 转到下一个中间件
+  })
+}
 
 function setRouter(app: express.Application) {
   ["get", "post", "all"].forEach(method => {
     for (let key in routerMapper[method]) {
       let rounterFunction = routerMapper[method][key];
-      // TODO: 3.7.3
-      // if (method === "post" && uploadMapper.includes(rounterFunction["name"])) {
-      //   app[method](key, uploadMiddleware, rounterFunction["invoker"]);
-      // } else {
-      //   app[method](key, rounterFunction["invoker"]);
-      // }
+      if(method == "post" && uploadMapper.includes(rounterFunction["name"])){
+        // 需要增加上传中间件的情况
+        app[method](key, uploadMiddleware, rounterFunction["invoker"]);
+      } else{
+        // 无须上传的情况
+        app[method](key, rounterFunction["invoker"]);
+      }
     }
   });
 }
@@ -42,22 +55,9 @@ function mapperFunction(method: string, value: string) {
   }
 }
 
-// function upload(target: any, propertyKey: string) {
-//   uploadMapper.push(target.constructor.name + "#" + propertyKey)
-// }
-
-// function uploadMiddleware(req, res, next) {
-//   const form = new multiparty.Form();
-//   form.parse(req, (err, fields, files) => {
-//     req.files = files["upload"] || undefined;
-//     next();
-//   });
-// }
 
 const GetMapping = (value: string) => mapperFunction("get", value);
 const PostMapping = (value: string) => mapperFunction("post", value);
 const RequestMapping = (value: string) => mapperFunction("all", value);
 
-export { 
-  //upload, 
-  GetMapping, PostMapping, RequestMapping, setRouter};
+export { upload, GetMapping, PostMapping, RequestMapping, setRouter};

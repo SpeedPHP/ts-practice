@@ -57,29 +57,6 @@ export default class ExpressServer extends ServerFactory {
             this.app.set('views', process.cwd() + viewConfig["path"]);
         }
 
-        if(this.session) {
-            const sessionConfig = this.session;
-            if(sessionConfig["trust proxy"] === 1){
-                this.app.set('trust proxy', 1);
-            }
-            this.app.use(expressSession(sessionConfig));
-        }
-
-        if(this.static) {
-            const staticPath = process.cwd() + this.static;
-            this.app.use(express.static(staticPath))
-        }
-
-        if(this.favicon) {
-            const faviconPath = process.cwd() + this.favicon;
-            this.app.use(serveFavicon(faviconPath));
-        }
-
-        if(this.compression) {
-            this.app.use(compression(this.compression));
-        }
-
-        this.app.use(cookieParser(this.cookieConfig["secret"] || undefined, this.cookieConfig["options"] || {}));
 
 
         setRouter(this.app);
