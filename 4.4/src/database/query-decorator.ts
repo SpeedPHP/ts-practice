@@ -34,41 +34,35 @@ function Select(sql: string) {
             }
             const [rows] = await pool.query(newSql, sqlValues);
             if (Object.keys(rows).length === 0) {
-                return;
+                return; // 没有结果
             }
-            // TODO
-            // const records = [];
-            // // 取得@ResultType装饰器记录的数据类型
-            // const resultType = resultTypeMap.get(
-            //     [target.constructor.name, propertyKey].toString(),
-            // );
-            // // 遍历查询结果记录，每行记录都创建一个数据类来装载
-            // for (const rowIndex in rows) {
-            //     const entity = Object.create(resultType);
-            //     Object.getOwnPropertyNames(resultType).forEach(function (propertyRow) {
-            //         // 匹配数据类的属性和字段名，对应赋值
-            //         if (rows[rowIndex].hasOwnProperty(propertyRow)) {
-            //             Object.defineProperty(
-            //                 entity,
-            //                 propertyRow,
-            //                 Object.getOwnPropertyDescriptor(rows[rowIndex], propertyRow),
-            //             );
-            //         }
-            //     });
-            //     // 组成数据类数组
-            //     records.push(entity);
-            // }
-            // return records;
+            const records = [];
+            const resultType = resultTypeMap.get([target.constructor.name, propertyKey].toString());
+            for(const rowIndex in rows) {
+                const entity = Object.create(resultType);
+                Object.getOwnPropertyNames(resultType).forEach(
+                    (propertyRow) => {
+                        if(rows[rowIndex].hasOwnProperty(propertyRow)) {
+                            Object.defineProperty(
+                                entity, propertyRow, Object.getOwnPropertyDescriptor(rows[rowIndex], propertyRow)
+                            );
+                        }
+                    }
+                )
+                records.push(entity);
+            }
+            return records;
         };
     }
 }
 
-// function ResultType(dataClass) {
-//     return function (target, propertyKey: string) {
-//         resultTypeMap.set([target.constructor.name, propertyKey].toString(), new dataClass());
-//         //never return
-//     };
-// }
+// 数据类装饰器
+function ResultType(dataClass){
+    return function(target, propertyKey) {
+        resultTypeMap.set([target.constructor.name, propertyKey].toString(), new dataClass());
+    }
+}
+
 
 function Param(name: string) {
     return function (target: any, propertyKey: string | symbol, parameterIndex: number) {
@@ -111,6 +105,4 @@ function convertSQLParams(args: any[], target: any, propertyKey: string, decorat
     return [decoratorSQL, queryValues];
 }
 
-export { Insert, Update, Update as Delete, Select, Param
-    //, ResultType 
-};
+export { Insert, Update, Update as Delete, Select, Param, ResultType};
