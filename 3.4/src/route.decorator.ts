@@ -34,13 +34,14 @@ function mapperFunction(method: string, value: string) {
       "invoker": async (req, res, next) => {
         const routerBean = getComponent(target.constructor);
         try {
-          let paramTotal = routerBean[propertyKey].length;
+          // TODO
+          //let paramTotal = routerBean[propertyKey].length;
           const args = [req, res, next];
-          for(let i = 0; i < paramTotal; i++) {
-            if(routerParams[[target.constructor.name, propertyKey, i].toString()]){
-              args[i] = routerParams[[target.constructor.name, propertyKey, i].toString()](req,res,next);
-            }
-          }
+          // for(let i = 0; i < paramTotal; i++) {
+          //   if(routerParams[[target.constructor.name, propertyKey, i].toString()]){
+          //     args[i] = routerParams[[target.constructor.name, propertyKey, i].toString()](req,res,next);
+          //   }
+          // }
 
           const testResult = await routerBean[propertyKey].apply(routerBean, args);
           if (typeof testResult === "object") {
@@ -119,46 +120,47 @@ function after(constructorFunction, methodName: string) {
       })
   };
 }
-const routerParams = {};
-function req(target, propertyKey, parameterIndex) {
-  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-  routerParams[key] = (req, res, next) => req;
-}
 
-function res(target, propertyKey, parameterIndex) {
-  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-  routerParams[key] = (req, res, next) => res;
-}
+// const routerParams = {};
+// function req(target, propertyKey, parameterIndex) {
+//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+//   routerParams[key] = (req, res, next) => req;
+// }
 
-function getParamInFunction(fn: Function, index: number) {
-  const code = fn.toString().replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg, '').replace(/=>.*$/mg, '').replace(/=[^,]+/mg, '');
-  const result = code.slice(code.indexOf('(') + 1, code.indexOf(')')).match(/([^\s,]+)/g);
-  return result[index] || null;
-}
+// function res(target, propertyKey, parameterIndex) {
+//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+//   routerParams[key] = (req, res, next) => res;
+// }
 
-function reqQuery(target, propertyKey, parameterIndex) {
-  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-  const paramName = getParamInFunction(target[propertyKey], parameterIndex);
-  routerParams[key] = (req, res, next) => req.query[paramName];
-}
+// function getParamInFunction(fn: Function, index: number) {
+//   const code = fn.toString().replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg, '').replace(/=>.*$/mg, '').replace(/=[^,]+/mg, '');
+//   const result = code.slice(code.indexOf('(') + 1, code.indexOf(')')).match(/([^\s,]+)/g);
+//   return result[index] || null;
+// }
 
-function reqBody(target, propertyKey, parameterIndex) {
-  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-  routerParams[key] = (req, res, next) => req.body;
-}
+// function reqQuery(target, propertyKey, parameterIndex) {
+//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+//   const paramName = getParamInFunction(target[propertyKey], parameterIndex);
+//   routerParams[key] = (req, res, next) => req.query[paramName];
+// }
 
-function reqForm(paramName) {
-  return function(target, propertyKey, parameterIndex) {
-    const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-    routerParams[key] = (req, res, next) => req.body[paramName];
-  }
-}
+// function reqBody(target, propertyKey, parameterIndex) {
+//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+//   routerParams[key] = (req, res, next) => req.body;
+// }
+
+// function reqForm(paramName) {
+//   return function(target, propertyKey, parameterIndex) {
+//     const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+//     routerParams[key] = (req, res, next) => req.body[paramName];
+//   }
+// }
 
 const getMapping = (value: string) => mapperFunction("get", value);
 const postMapping = (value: string) => mapperFunction("post", value);
 const requestMapping = (value: string) => mapperFunction("all", value);
 
 export {   before, after, getMapping, postMapping, requestMapping, setRouter, upload, jwt,
-  req, reqQuery, res, reqBody
+  //req, reqQuery, res, reqBody
 
 };
