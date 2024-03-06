@@ -1,9 +1,9 @@
+// TODO
+// @app
+// class MainApp{}
 
-@app
-class MainApp{}
+// function app(target) {
+//   console.log("执行 @app 装饰器")
+// }
 
-function app(target) {
-  console.log("执行 @app 装饰器")
-}
-
-app("");
+// app("");
