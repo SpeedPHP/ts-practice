@@ -6,16 +6,16 @@ import BeanFactory from "./bean-factory.class";
 import LogFactory from "./factory/log-factory.class";
 
 
-let globalConfig = {};
-const configPath = process.cwd() + "/test/config.json";
-if (fs.existsSync(configPath)) {
-    globalConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-    const nodeEnv = process.env.NODE_ENV || "development";
-    const envConfigFile = process.cwd() + "/test/config-" + nodeEnv + ".json";
-    if (fs.existsSync(envConfigFile)) {
-        globalConfig = Object.assign(globalConfig, JSON.parse(fs.readFileSync(envConfigFile, "utf-8")));
-    }
-}
+// let globalConfig = {};
+// const configPath = process.cwd() + "/test/config.json";
+// if (fs.existsSync(configPath)) {
+//     globalConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+//     const nodeEnv = process.env.NODE_ENV || "development";
+//     const envConfigFile = process.cwd() + "/test/config-" + nodeEnv + ".json";
+//     if (fs.existsSync(envConfigFile)) {
+//         globalConfig = Object.assign(globalConfig, JSON.parse(fs.readFileSync(envConfigFile, "utf-8")));
+//     }
+// }
 
 function app<T extends { new(...args: any[]): {} }>(constructor: T) {
     const srcDir = process.cwd() + "/src";
@@ -55,29 +55,29 @@ function bean(target: any, propertyName: string, descriptor: PropertyDescriptor)
     BeanFactory.putBean(returnType, target[propertyName]);
 }
 
-function value(configPath): any {
-    return function (target: any, propertyKey: string) {
-        // 检查配置是否存在，避免报错
-        if (globalConfig === undefined) {
-            Object.defineProperty(target, propertyKey, {
-                get: () => {
-                    return undefined;
-                }
-            });
-        } else {
-            let pathNodes = configPath.split(".");
-            let nodeValue = globalConfig;
-            for (let i = 0; i < pathNodes.length; i++) {
-                nodeValue = nodeValue[pathNodes[i]];
-            }
-            Object.defineProperty(target, propertyKey, {
-                get: () => {
-                    return nodeValue;
-                }
-            });
-        }
-    };
-}
+// function value(configPath): any {
+//     return function (target: any, propertyKey: string) {
+//         // 检查配置是否存在，避免报错
+//         if (globalConfig === undefined) {
+//             Object.defineProperty(target, propertyKey, {
+//                 get: () => {
+//                     return undefined;
+//                 }
+//             });
+//         } else {
+//             let pathNodes = configPath.split(".");
+//             let nodeValue = globalConfig;
+//             for (let i = 0; i < pathNodes.length; i++) {
+//                 nodeValue = nodeValue[pathNodes[i]];
+//             }
+//             Object.defineProperty(target, propertyKey, {
+//                 get: () => {
+//                     return nodeValue;
+//                 }
+//             });
+//         }
+//     };
+// }
 
 function autoware(target: any, propertyName: string): void {
     let type = Reflect.getMetadata("design:type", target, propertyName);
@@ -148,4 +148,6 @@ function schedule(cronTime: string | Date) {
     }
 }
 
-export { onClass, bean, autoware, inject, log, app, before, after, value, schedule };
+export { onClass, bean, autoware, inject, log, app, before, after, 
+    //value, 
+    schedule };
