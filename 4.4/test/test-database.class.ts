@@ -1,4 +1,6 @@
-import { Insert, Update, Select, Param, ResultType } from "../src/database/query-decorator";
+import { Insert, Update, Select, Param
+    //, ResultType 
+} from "../src/database/query-decorator";
 import { GetMapping } from "../src/route-mapping.decorator";
 import { onClass, log } from "../src/speed";
 import UserDto from "./entities/user-dto.class";
@@ -36,12 +38,17 @@ export default class TestDatabase {
         res.send(rows);
     }
 
-    @GetMapping("/db/select1")
-    async selectById(req, res) {
-        const row = await this.findRow(req.query.id || 1);
-        log(row);
-        res.send(row);
-    }
+    // TODO
+    // @GetMapping("/db/select1")
+    // async selectById(req, res) {
+    //     const row = await this.findRow(req.query.id || 1);
+    //     log(row);
+    //     res.send(row);
+    // }
+
+    // @ResultType(UserDto)
+    // @Select("Select * from `user` where id = #{id}")
+    // private async findRow(@Param("id")id: number): Promise<UserDto[]> { return null;}
 
     @Insert("Insert into `user` (id, name) values (#{id}, #{name})")
     private async addRow(@Param("name") newName: string, @Param("id") id: number) { }
@@ -55,8 +62,6 @@ export default class TestDatabase {
     @Select("Select * from `user`")
     private async selectRow() { }
 
-    @ResultType(UserDto)
-    @Select("Select * from `user` where id = #{id}")
-    private async findRow(@Param("id")id: number): Promise<UserDto[]> { return null;}
+
 
 }

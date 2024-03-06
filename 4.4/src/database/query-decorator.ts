@@ -36,32 +36,34 @@ function Select(sql: string) {
             if (Object.keys(rows).length === 0) {
                 return; // 没有结果
             }
-            const records = [];
-            const resultType = resultTypeMap.get([target.constructor.name, propertyKey].toString());
-            for(const rowIndex in rows) {
-                const entity = Object.create(resultType);
-                Object.getOwnPropertyNames(resultType).forEach(
-                    (propertyRow) => {
-                        if(rows[rowIndex].hasOwnProperty(propertyRow)) {
-                            Object.defineProperty(
-                                entity, propertyRow, Object.getOwnPropertyDescriptor(rows[rowIndex], propertyRow)
-                            );
-                        }
-                    }
-                )
-                records.push(entity);
-            }
-            return records;
+            // TODO
+            // const records = [];
+            // const resultType = resultTypeMap.get([target.constructor.name, propertyKey].toString());
+            // for(const rowIndex in rows) {
+            //     const entity = Object.create(resultType);
+            //     Object.getOwnPropertyNames(resultType).forEach(
+            //         (propertyRow) => {
+            //             if(rows[rowIndex].hasOwnProperty(propertyRow)) {
+            //                 Object.defineProperty(
+            //                     entity, propertyRow, Object.getOwnPropertyDescriptor(rows[rowIndex], propertyRow)
+            //                 );
+            //             }
+            //         }
+            //     )
+            //     records.push(entity);
+            // }
+            // return records;
         };
     }
 }
 
+// TODO
 // 数据类装饰器
-function ResultType(dataClass){
-    return function(target, propertyKey) {
-        resultTypeMap.set([target.constructor.name, propertyKey].toString(), new dataClass());
-    }
-}
+// function ResultType(dataClass){
+//     return function(target, propertyKey) {
+//         resultTypeMap.set([target.constructor.name, propertyKey].toString(), new dataClass());
+//     }
+// }
 
 
 function Param(name: string) {
@@ -105,4 +107,6 @@ function convertSQLParams(args: any[], target: any, propertyKey: string, decorat
     return [decoratorSQL, queryValues];
 }
 
-export { Insert, Update, Update as Delete, Select, Param, ResultType};
+export { Insert, Update, Update as Delete, Select, Param
+    //, ResultType
+};

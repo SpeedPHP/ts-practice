@@ -1,22 +1,23 @@
 import { createPool, ResultSetHeader } from 'mysql2';
 import { config, log } from '../speed';
 import BeanFactory from "../bean-factory.class";
-import CacheFactory from '../factory/cache-factory.class';
+//import CacheFactory from '../factory/cache-factory.class';
 const pool = createPool(config("mysql")).promise();
 const paramMetadataKey = Symbol('param');
 const resultTypeMap = new Map<string, object>();
 const cacheDefindMap = new Map<string,number>();
 const tableVersionMap =  new Map<string, number>();
-let cacheBean: CacheFactory;
+//let cacheBean: CacheFactory;
 
 function Insert(sql: string) {
     return (target, propertyKey: string, descriptor: PropertyDescriptor) => {
         descriptor.value = async (...args: any[]) => {
             const result: ResultSetHeader = await queryForExecute(sql, args, target, propertyKey);
-            if(cacheBean && result.affectedRows > 0) {
-                const [tableName, tableVersion] = getTableAndVersion("insert", sql);
-                tableVersionMap.set(tableName, tableVersion + 1);
-            }
+            // TODO
+            // if(cacheBean && result.affectedRows > 0) {
+            //     const [tableName, tableVersion] = getTableAndVersion("insert", sql);
+            //     tableVersionMap.set(tableName, tableVersion + 1);
+            // }
             return result.insertId;
         };
     };
@@ -26,10 +27,11 @@ function Update(sql: string) {
     return (target, propertyKey: string, descriptor: PropertyDescriptor) => {
         descriptor.value = async (...args: any[]) => {
             const result: ResultSetHeader = await queryForExecute(sql, args, target, propertyKey);
-            if(cacheBean && result.affectedRows > 0) {
-                const [tableName, tableVersion] = getTableAndVersion("update", sql);
-                tableVersionMap.set(tableName, tableVersion + 1);
-            }
+            // TODO
+            // if(cacheBean && result.affectedRows > 0) {
+            //     const [tableName, tableVersion] = getTableAndVersion("update", sql);
+            //     tableVersionMap.set(tableName, tableVersion + 1);
+            // }
             return result.affectedRows;
         };
     };
@@ -39,47 +41,48 @@ function Delete(sql: string) {
     return (target, propertyKey: string, descriptor: PropertyDescriptor) => {
         descriptor.value = async (...args: any[]) => {
             const result: ResultSetHeader = await queryForExecute(sql, args, target, propertyKey);
-            if(cacheBean && result.affectedRows > 0) {
-                const [tableName, tableVersion] = getTableAndVersion("delete", sql);
-                tableVersionMap.set(tableName, tableVersion + 1);
-            }
+            // TODO
+            // if(cacheBean && result.affectedRows > 0) {
+            //     const [tableName, tableVersion] = getTableAndVersion("delete", sql);
+            //     tableVersionMap.set(tableName, tableVersion + 1);
+            // }
             return result.affectedRows;
         };
     };
 }
 
+// TODO
+// function cache(ttl){
+//     return (target, propertyKey) => {
+//         cacheDefindMap.set([target.constructor.name, propertyKey].toString(), ttl);
+//         if(cacheBean == null) {
+//             // 未初始化
+//             const cacheFactory = BeanFactory.getBean(CacheFactory);
+//             if(cacheFactory || cacheFactory["factory"]) {
+//                 cacheBean = cacheFactory["factory"];
+//             }
+//         }
+//     }
+// }
 
-function cache(ttl){
-    return (target, propertyKey) => {
-        cacheDefindMap.set([target.constructor.name, propertyKey].toString(), ttl);
-        if(cacheBean == null) {
-            // 未初始化
-            const cacheFactory = BeanFactory.getBean(CacheFactory);
-            if(cacheFactory || cacheFactory["factory"]) {
-                cacheBean = cacheFactory["factory"];
-            }
-        }
-    }
-}
-
-function getTableAndVersion(name: string, sql: string): [string, number] {
-    const regExpMap = {
-        insert: /insert\sinto\s+([\w`\'\"]+)/i,
-        update: /update\s+([\w`\'\"]+)/i,
-        delete: /delete\sfrom\s+([\w`\'\"]+)/i,
-        select: /\s+from\s+([\w`\'\"]+)/i
-    }
-    const macths = sql.match(regExpMap[name]);
-    if (macths && macths.length > 1) {
-        const tableName = macths[1].replace(/[`\'\"]/g, "");
-        const tableVersion = tableVersionMap.get(tableName) || 1;
-        tableVersionMap.set(tableName, tableVersion);
-        log(tableVersionMap);
-        return [tableName, tableVersion];
-    }else{
-        throw new Error("can not find table name");
-    }
-}
+// function getTableAndVersion(name: string, sql: string): [string, number] {
+//     const regExpMap = {
+//         insert: /insert\sinto\s+([\w`\'\"]+)/i,
+//         update: /update\s+([\w`\'\"]+)/i,
+//         delete: /delete\sfrom\s+([\w`\'\"]+)/i,
+//         select: /\s+from\s+([\w`\'\"]+)/i
+//     }
+//     const macths = sql.match(regExpMap[name]);
+//     if (macths && macths.length > 1) {
+//         const tableName = macths[1].replace(/[`\'\"]/g, "");
+//         const tableVersion = tableVersionMap.get(tableName) || 1;
+//         tableVersionMap.set(tableName, tableVersion);
+//         log(tableVersionMap);
+//         return [tableName, tableVersion];
+//     }else{
+//         throw new Error("can not find table name");
+//     }
+// }
 
 // 查询装饰器
 function Select(sql: string) {
@@ -92,22 +95,23 @@ function Select(sql: string) {
                 [newSql, sqlValues] = convertSQLParams(args, target, propertyKey, newSql);
             }
             let rows;
-            if(cacheBean && cacheDefindMap.has([target.constructor.name, propertyKey].toString())){
-                // 进行缓存逻辑
-                const [tableName, tableVersion] = getTableAndVersion("select", newSql);
-                // 表示这四个值都相同的情况下，取得的就是同一个缓存结果
-                const cacheKey = JSON.stringify([tableName, tableVersion, newSql, sqlValues]); 
-                if(cacheBean.has(cacheKey)){
-                    rows = cacheBean.get(cacheKey);
-                }else{
-                    [rows] = await pool.query(newSql, sqlValues);
-                    const ttl = cacheDefindMap.get([target.constructor.name, propertyKey].toString());
-                    cacheBean.set(cacheKey, rows, ttl);
-                }
-            }else{
+            // TODO
+            // if(cacheBean && cacheDefindMap.has([target.constructor.name, propertyKey].toString())){
+            //     // 进行缓存逻辑
+            //     const [tableName, tableVersion] = getTableAndVersion("select", newSql);
+            //     // 表示这四个值都相同的情况下，取得的就是同一个缓存结果
+            //     const cacheKey = JSON.stringify([tableName, tableVersion, newSql, sqlValues]); 
+            //     if(cacheBean.has(cacheKey)){
+            //         rows = cacheBean.get(cacheKey);
+            //     }else{
+            //         [rows] = await pool.query(newSql, sqlValues);
+            //         const ttl = cacheDefindMap.get([target.constructor.name, propertyKey].toString());
+            //         cacheBean.set(cacheKey, rows, ttl);
+            //     }
+            // }else{
                 // 不需要缓存，直接查询
                 [rows] = await pool.query(newSql, sqlValues);
-            }
+            //}
             if (rows === null || Object.keys(rows).length === 0) {
                 return;
             }
@@ -187,4 +191,6 @@ function convertSQLParams(args: any[], target: any, propertyKey: string, decorat
 }
 
 
-export { Insert, Update, Delete, Select, Param, ResultType, cache};
+export { Insert, Update, Delete, Select, Param, ResultType
+    //, cache
+};
