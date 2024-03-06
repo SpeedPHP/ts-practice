@@ -24,6 +24,7 @@ export default class ExpressServer extends ServerFactory {
             this.app.use(middleware);
         });
         this.setDefaultMiddleware();
+        // TODO
         // const fs = require("fs");
         // this.app.engine("ntl", (filePath, options, callback) => {
         //     fs.readFile(filePath, (err, content) => {
@@ -37,15 +38,16 @@ export default class ExpressServer extends ServerFactory {
         // this.app.set('views', "./test/views")
         // this.app.set('view engine', 'ntl')
 
-        const viewConfig = {
-            "engine" : "mustache",
-            "path": "/test/views",
-            "suffix": "html"
-        }
+        // TODO
+        // const viewConfig = {
+        //     "engine" : "mustache",
+        //     "path": "/test/views",
+        //     "suffix": "html"
+        // }
 
-        this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
-        this.app.set("view engine", viewConfig["suffix"]);
-        this.app.set("views", process.cwd() + viewConfig["path"])
+        // this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
+        // this.app.set("view engine", viewConfig["suffix"]);
+        // this.app.set("views", process.cwd() + viewConfig["path"])
 
 
         this.app.listen(port, () => {
