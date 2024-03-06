@@ -85,30 +85,46 @@ export default class ExpressServer extends ServerFactory {
         // 设置路由页面
         setRouter(this.app);
 
+        // TODO 3.9
+        // this.app.use((req, res, next) => {
+        //     res.status = 404;
+        //     res.write("404 Not Found");
+        //     res.end();
+        // });
+        // this.app.use((err, req, res, next) => {
+        //     if (!err) {
+        //         next();
+        //     }
+        //     res.status(err.status || 500);
+        //     res.send("500 Server Error");
+        // });
+
+
+        // TODO
         // 404 处理，找不到页面
-        this.app.use((req, res, next) => {
-            res.status(404);
-            if(req.accepts("html")){
-                res.render(process.cwd() + "/static/error-page/404.html");
-            }else if(req.accepts("json")) {
-                res.json({error: "Not Found"});
-            }else{
-                res.type("txt").send("Not Found");
-            }
-        })
-        // 500 处理，出现错误
-        this.app.use((err, req, res, next) => {
-            if(!err) {
-                next();
-            }
-            res.status(err.status || 500);
-            if(req.accepts("html")){
-                res.render(process.cwd() + "/static/error-page/500.html");
-            }else if(req.accepts("json")) {
-                res.json({error: "Server Error"});
-            }else{
-                res.type("txt").send("Server Error");
-            }
-        });
+        // this.app.use((req, res, next) => {
+        //     res.status(404);
+        //     if(req.accepts("html")){
+        //         res.render(process.cwd() + "/static/error-page/404.html");
+        //     }else if(req.accepts("json")) {
+        //         res.json({error: "Not Found"});
+        //     }else{
+        //         res.type("txt").send("Not Found");
+        //     }
+        // })
+        // // 500 处理，出现错误
+        // this.app.use((err, req, res, next) => {
+        //     if(!err) {
+        //         next();
+        //     }
+        //     res.status(err.status || 500);
+        //     if(req.accepts("html")){
+        //         res.render(process.cwd() + "/static/error-page/500.html");
+        //     }else if(req.accepts("json")) {
+        //         res.json({error: "Server Error"});
+        //     }else{
+        //         res.type("txt").send("Server Error");
+        //     }
+        // });
     }
 }
