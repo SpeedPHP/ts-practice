@@ -1,86 +1,76 @@
-// TODO
-// import "reflect-metadata";
+import "reflect-metadata";
 
-// @atClass
-// class SecondClass {}
+@atClassWithArg(1000)
+class SecondClass{}
 
-// @atClassWithArg("First Object")
-// export default class FirstClass {
+@atClass
+export default class FirstClass{
 
-//     @atProperty
-//     private name: string;
+  @atProperty
+  private name:string;
 
-//     @atPropertyWithArg(20)
-//     private age: number;
+  @atPropertyWithArg(10)
+  private age:number;
 
-//     @atAccessor
-//     get newname(): string {
-//         return this.name;
-//     }
+  @atMethod
+  changeName(name: string): SecondClass {
+    this.name = name;
+    return new SecondClass();
+  }
 
-//     @atMethod
-//     changeName(name: string): SecondClass {
-//         this.name = name;
-//         return new SecondClass();
-//     }
+  @atMethodWithArg(1000)
+  change(
+    name: string, // 0
+    @atParameter age: number // 1
+  ):void{
 
-//     @atMethodWithArg(1000)
-//     change(
-//         @atParameter name: string, 
-//         @atParameter age: number): void {
-//         this.age = age;
-//         this.name = name;
-//     }
+  }
 
-//     getName(): string {
-//         return this.name;
-//     }
-// }
 
-// const obj = new FirstClass();
+}
 
-// console.log("FirstClass对象调用getName()取得装饰器赋值为", obj.getName());
+// 参数装饰器
+function atParameter(target, propertyKey, paramIndex) {
+  const paramType = Reflect.getMetadata("design:paramtypes", target, propertyKey);
+  console.log("参数列表", paramType);
+  console.log("参数装饰器, 方法", propertyKey, "参数位置", paramIndex, "参数类型", paramType[paramIndex]);
+}
 
-// function atClass(target) {
-//     console.log("类装饰器，类名是：", target.name);
-// }
+// 方法装饰器
+function atMethod(target, propertyKey) {
+  const returnType = Reflect.getMetadata("design:returntype", target, propertyKey);
+  console.log("方法装饰器", propertyKey, "类型：", returnType);
+}
 
-// function atClassWithArg(arg) {
-//     return function(target) {
-//         console.log("类装饰器，输入参数为：", arg, "类名是：", target.name);
-//     }
-// }
+function atMethodWithArg(arg) {
+  return (target, propertyKey) => {
+    const returnType = Reflect.getMetadata("design:returntype", target, propertyKey);
+    console.log("方法装饰器", propertyKey, "类型：", returnType, "参数是", arg);
+  }
+}
 
-// function atMethod(target, propertyKey) {
-//     const returnType = Reflect.getMetadata("design:returntype", target, propertyKey);
-//     console.log("方法装饰器，类名", target, "方法是：", propertyKey, "方法返回值类型：", returnType);
-// }
+// 成员变量装饰器
+function atProperty(target, propertyKey) {
+  const propertyType = Reflect.getMetadata("design:type", target, propertyKey);
+  console.log("变量装饰器：", propertyKey, " 类型：", propertyType);
+}
 
-// function atMethodWithArg(arg) {
-//     return function (target, propertyKey) {
-//         const returnType = Reflect.getMetadata("design:returntype", target, propertyKey);
-//         console.log("方法装饰器，输入参数：", arg, "类名", target, "方法是：", propertyKey, "方法返回值类型：", returnType);
-//     }
-// }
+// 带参数的成员变量装饰器
+function atPropertyWithArg(arg) {
+  return (target, propertyKey) => {
+    const propertyType = Reflect.getMetadata("design:type", target, propertyKey);
+    console.log("变量装饰器：", propertyKey, " 类型：", propertyType, "参数是：", arg);
+  }
+}
 
-// function atProperty(target, propertyKey) {
-//     const propertyType = Reflect.getMetadata("design:type", target, propertyKey);
-//     console.log("变量装饰器，名称为：", propertyKey, "变量类型是：", propertyType);
-// }
+// 类装饰器
+function atClass(target) {
+  console.log("类装饰器，类名是："+target.name);
+}
 
-// function atPropertyWithArg(arg) {
-//     return function (target, propertyKey) {
-//         const propertyType = Reflect.getMetadata("design:type", target, propertyKey);
-//         console.log("变量装饰器，输入参数：", arg, "名称为：", propertyKey, "变量类型是：", propertyType);
-//     }
-// }
-
-// function atAccessor(target, propertyKey) {
-//     const returnType = Reflect.getMetadata("design:type", target, propertyKey);
-//     console.log("访问器装饰器，类名", target, "访问器是：", propertyKey, "访问器类型：", returnType);
-// }
-
-// function atParameter(target, propertyKey, parameterIndex) {
-//     const paramType = Reflect.getMetadata("design:paramtypes", target, propertyKey);
-//     console.log("参数装饰器，方法：",propertyKey, "参数位置:", parameterIndex, "参数类型：", paramType[parameterIndex]);
-// }
+// 带参数的类装饰器
+function atClassWithArg(arg) {
+  return (target) => {
+    console.log("类装饰器，类名是："+target.name, " 参数：" + arg);
+  };
+}

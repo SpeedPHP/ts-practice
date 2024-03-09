@@ -1,24 +1,22 @@
-import {component, getMapping, value, select, param, cache} from "typespeed"
+import { component,getMapping,param,select,value,cache  } from "typespeed";
 
-// 数据库测试类
-// TODO
-//@component
+
+@component
 class TestDatabase {
 
-  //@value("search.page.default.id")
+  @value("search.page.default.id")
   private defaultId: number;
 
-  //@getMapping("/db/select") // http://localhost:3000/db/select
+  // http://localhost:3000/db/select
+  @getMapping("/db/select")
   selectById(req, res): void {
       const row: UserDto = this.findRow(req.query.id || this.defaultId);
       res.send(row);
   }
 
-  //@cache(1800)
-  //@select("select * from `user` where id = #{id}")
-  private findRow(
-    //@param("id") 
-    id: number): UserDto {
+  @cache(1800)
+  @select("select * from `user` where id = #{id}")
+  private findRow(@param("id") id: number): UserDto {
     return new UserDto(id, 'test');
   }
 }
