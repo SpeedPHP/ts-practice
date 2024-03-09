@@ -1,17 +1,15 @@
-// TODO
-// import { log, onClass, value } from "../src/speed";
-// import { GetMapping } from "../src/route-mapping.decorator";
+import { onClass, log, value } from "../src/speed";
+import { GetMapping } from "../src/route-mapping.decorator";
 
-// @onClass
-// export default class FirstPage {
+@onClass
+export default class FirstPage {
 
-//     @value("redis")
-//     public redisConfig: string;
+  @value("redis")
+  redisConfig;
 
-//     @GetMapping("/test_config.html")
-//     public index(req: any, res: any) {
-//         log(this.redisConfig)
-//         res.send("FirstPage index running");
-//     }
-
-// }
+  @GetMapping("/test_config.html")
+  index(req, res) {
+    log(this.redisConfig);
+    res.end("first Page");
+  }
+}
