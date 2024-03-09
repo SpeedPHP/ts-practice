@@ -1,38 +1,29 @@
-// TODO
-// const routerMapper = {
-//   "get": {},
-//   "post": {},
-//   "all": {}
-// }
 
-// function setRouter(app) {
-//   for(let url in routerMapper["get"]){
-//     app.get(url, routerMapper["get"][url]);
-//   }
-//   for(let url in routerMapper["post"]){
-//     app.post(url, routerMapper["post"][url]);
-//   }
-//   for(let url in routerMapper["all"]){
-//     app.all(url, routerMapper["all"][url]);
-//   }
-// }
+const routerMapper = {
+  "get": {},
+  "post": {},
+  "all": {} // 所有类型的请求都可以
+}
 
-// function GetMapping(url) {
-//   return function(target, propertyKey) {
-//     routerMapper["get"][url] = target[propertyKey]
-//   }
-// }
+// 设置路由
+function setRouter(app) {
+  console.log(routerMapper);
+  ["get", "post", "all"].forEach(method => {
+    for(let url in routerMapper[method]) {
+      app[method](url, routerMapper[method][url]);
+    }
+  });
+}
 
-// function PostMapping(url) {
-//   return function(target, propertyKey) {
-//     routerMapper["post"][url] = target[propertyKey]
-//   }
-// }
+function mapperFunction(method, url) {
+  return (target, propertyKey) => {
+    routerMapper[method][url] = target[propertyKey];
+  }
+}
 
-// function RequestMapping(url) {
-//   return function(target, propertyKey) {
-//     routerMapper["all"][url] = target[propertyKey]
-//   }
-// }
+const GetMapping = (url) => mapperFunction("get", url);
+const PostMapping = (url) => mapperFunction("post", url);
+const RequestMapping = (url) => mapperFunction("all", url);
 
-// export {GetMapping, setRouter, PostMapping, RequestMapping}
+
+export { PostMapping, RequestMapping, GetMapping, setRouter };
