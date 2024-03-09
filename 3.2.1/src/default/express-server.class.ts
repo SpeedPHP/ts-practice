@@ -21,10 +21,11 @@ export default class ExpressServer extends ServerFactory {
         });
         app.use(express.urlencoded({extended: true}));
         app.use(cookieParser())
-        // TODO 3.2.1 介绍req和res
-        // app.get('/index.html', (req, res) => {
-        //     res.redirect("https://www.baidu.com");
-        // });
+
+        // Request. Response
+        app.get('/', (req, res) => {
+            res.redirect("https://www.baidu.com/");
+        });
 
         app.listen(port, () => {
             log("server start at port: " + port);
