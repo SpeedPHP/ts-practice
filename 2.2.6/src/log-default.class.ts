@@ -1,16 +1,14 @@
-// TODO
-// import { bean } from "./speed";
-// import LogFactory from "./log-factory.class";
+import LogFactory from "./log-factory.class";
+import { bean } from "./speed";
 
+export default class LogDefault extends LogFactory {
 
-// export default class LogDefault extends LogFactory{
+  @bean
+  createDefaultLog(): LogFactory {
+    return new LogDefault();
+  }
 
-//   @bean
-//   createLog(): LogFactory {
-//     return new LogDefault();
-//   }
-
-//   log(message?: any): void {
-//     console.log(message);
-//   }
-// }
+  log(message) {
+    console.log(message);
+  }
+}

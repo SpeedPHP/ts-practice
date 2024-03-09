@@ -1,4 +1,3 @@
-// TODO
-// export default abstract class LogFactory{
-//   abstract log(message?):void;
-// }
+export default abstract class LogFactory {
+  abstract log(message);
+}
