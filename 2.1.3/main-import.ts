@@ -1,2 +1,2 @@
-// TODO
-// import("./example-import.class")
+
+import("./example-import.class");
