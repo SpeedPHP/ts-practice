@@ -9,10 +9,9 @@ export default class FirstPage {
         res.send("FirstPage index running");
     }
 
-    // TODO
-    // @GetMapping("/error") // 500 错误
-    // testError(req, res) {
-    //     throw new Error("Test Error");
-    // }
+    @GetMapping("/error")
+    testError() {
+        throw new Error("Test Error");
+    }
 
 }
