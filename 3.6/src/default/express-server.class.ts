@@ -13,21 +13,20 @@ export default class ExpressServer extends ServerFactory {
     @value("view")
     public view: string;
 
-    // TODO
-    // @value("static") // 静态资源的路径
-    // private static: string;
+    @value("static")
+    private static: string;
 
-    // @value("favicon") // 站点图标
-    // private favicon: string;
+    @value("favicon")
+    private favicon: string;
 
-    // @value("compression") // 压缩配置
-    // private compression: object;
+    @value("compression")
+    private compression: object;
 
-    // @value("cookie") // Cookie
-    // private cookieConfig: object;
+    @value("cookie")
+    private cookieConfig: object;
 
-    // @value("session") // Session
-    // private session: object;
+    @value("session")
+    private session:object;
 
 
     @bean
@@ -53,36 +52,34 @@ export default class ExpressServer extends ServerFactory {
 
     private setDefaultMiddleware() {
 
-        // TODO
-        // 静态资源
-        // if(this.static) {
-        //     const staticPath = process.cwd() + this.static;
-        //     this.app.use(express.static(staticPath)); // 设置中间件
-        // }
+        if(this.static) {
+            const staticPath = process.cwd() + this.static;
+            this.app.use(express.static(staticPath));
+        }
 
-        // if(this.favicon) {
-        //     const faviconPath = process.cwd() + this.favicon;
-        //     this.app.use(serveFavicon(faviconPath));
-        // }
+        if(this.favicon) {
+            const faviconPath = process.cwd() + this.favicon;
+            this.app.use(serveFavicon(faviconPath));
+        }
 
-        // if(this.compression){
-        //     this.app.use(compression(this.compression));
-        // }
+        if(this.compression) {
+            this.app.use(compression(this.compression));
+        }
 
-        // if(this.cookieConfig) {
-        //     this.app.use(
-        //         cookieParser(this.cookieConfig["secret"] || undefined, this.cookieConfig["options"] || {})
-        //     );
-        // }
+        if(this.cookieConfig) {
+            this.app.use(cookieParser(
+                this.cookieConfig["secret"] || undefined,
+                this.cookieConfig["options"] || {}
+            ));
+        }
 
-        // if(this.session) {
-        //     const sessionConfig = this.session;
-        //     if(sessionConfig["trust proxy"] === 1){
-        //         this.app.set("trust proxy", 1);
-        //     }
-        //     this.app.use(expressSession(sessionConfig));
-        // }
-
+        if(this.session) {
+            const sessionConfig = this.session;
+            if(sessionConfig["trust proxy"] === 1) {
+                this.app.set("trust proxy", 1);
+            }
+            this.app.use(expressSession(sessionConfig));
+        }
 
         setRouter(this.app);
     }
