@@ -11,6 +11,34 @@ const routerMapper = {
 const routerParams = {};
 const routerParamsTotal = {};
 const routerMiddleware = {};
+
+function before(constructorFunction, methodName) {
+  const targerBean = getComponent(constructorFunction);
+  return (target, propertyKey) => {
+    const currentMethod = targerBean[methodName];
+    Object.assign(targerBean, {
+      [methodName]: (...args) => {
+        target[propertyKey](...args); // AopTest - FirstIndex()
+        return currentMethod.apply(targerBean, args);
+        // FirstPage index 
+      }
+    })
+  }
+}
+
+function after(constructorFunction, methodName) {
+  const targerBean = getComponent(constructorFunction);
+  return (target, propertyKey) => {
+    const currentMethod = targerBean[methodName];
+    Object.assign(targerBean, {
+      [methodName]: (...args) => {
+        currentMethod.apply(targerBean, args);
+        target[propertyKey](...args); // AopTest - FirstIndex()
+        // FirstPage index 
+      }
+    })
+  }
+}
 function setRouter(app: express.Application) {
   ["get", "post", "all"].forEach(method => {
     for (let key in routerMapper[method]) {
@@ -90,36 +118,6 @@ function jwt(jwtConfig) {
   }
 }
 
-// TODO
-// function before(constructorFunction, methodName) {
-//   const targetBean = getComponent(constructorFunction);
-//   return function (target, propertyKey) {
-//     const currentMethod = targetBean[methodName];
-//     Object.assign(targetBean, {
-//       [methodName]: function(...args) {
-//         target[propertyKey](...args); // 这里是切面程序，AopTest - FirstIndex
-//         return currentMethod.apply(targetBean, args); // index 在 targetBean（FirstPage）调用，参数是 args
-//       }
-//     })
-//   }
-// }
-/**
- * 后置
- */
-// TODO
-// function after(constructorFunction, methodName) {
-//   const targetBean = getComponent(constructorFunction);
-//   return function (target, propertyKey) {
-//     const currentMethod = targetBean[methodName];
-//     Object.assign(targetBean, {
-//       [methodName]: function(...args) {
-//         const result = currentMethod.apply(targetBean, args); // index 在 targetBean（FirstPage）调用，参数是 args
-//         target[propertyKey](...args); // 这里是切面程序，AopTest - FirstIndex
-//         return result;
-//       }
-//     })
-//   }
-// }
 
 function req(target: any, propertyKey: string, parameterIndex: number) {
   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
@@ -170,6 +168,5 @@ const getMapping = (value: string) => mapperFunction("get", value);
 const postMapping = (value: string) => mapperFunction("post", value);
 const requestMapping = (value: string) => mapperFunction("all", value);
 
-export { next, reqBody, reqQuery, reqForm, reqParam, req, req as request, res, res as response, getMapping, postMapping, requestMapping, setRouter, upload, jwt, 
-  //before, after
+export { next, reqBody, reqQuery, reqForm, reqParam, req, req as request, res, res as response, getMapping, postMapping, requestMapping, setRouter, upload, jwt, before, after
  };

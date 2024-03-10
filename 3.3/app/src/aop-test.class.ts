@@ -1,18 +1,11 @@
-// TODO
-// import { log, before, after } from "../../src/typespeed"
-// import FirstPage from './first-page.class'
+import {log, before} from "../../src/typespeed";
+import FirstPage from "./first-page.class";
 
-// export default class AopTest {
+export default class AopTest{
 
-//     @before(FirstPage, "index")
-//     public FirstIndex() {
-//         log("AopTest - FirstIndex")
-//         return "FirstIndex";
-//     }
-
-//     @after(FirstPage, "index")
-//     public FirstLast() {
-//         log("AopTest - FirstLast")
-//         return "FirstIndex";
-//     }
-// }
+  @before(FirstPage, "index")
+  FirstIndex() {
+    log("AopTest - FirstIndex");
+    return "FirstIndex";
+  }
+}
