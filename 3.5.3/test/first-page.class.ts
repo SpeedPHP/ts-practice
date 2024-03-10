@@ -1,17 +1,14 @@
-// TODO
-// import { log, onClass } from "../src/speed";
-// import { GetMapping } from "../src/route-mapping.decorator";
 
-// @onClass
-// export default class FirstPage {
+import { log, onClass } from "../src/speed";
+import { GetMapping } from "../src/route-mapping.decorator";
 
-//   @GetMapping("/")
-//   public index(req, res) {
-//     res.render("index", {"title": "你好", "message": "我是模板引擎"})
-//   }
+@onClass
+export default class FirstPage {
 
-//   @GetMapping("/mu")
-//   public mu(req, res) {
-//     res.render("index", {"name": "模板引擎"})
-//   }
-// }
+  @GetMapping("/")
+  public index(req, res) {
+    res.render("index", {
+      "name": "Mustache 模板引擎"
+    });
+  }
+}

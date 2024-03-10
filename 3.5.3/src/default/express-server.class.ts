@@ -24,30 +24,15 @@ export default class ExpressServer extends ServerFactory {
             this.app.use(middleware);
         });
         this.setDefaultMiddleware();
-        // TODO
-        // const fs = require("fs");
-        // this.app.engine("ntl", (filePath, options, callback) => {
-        //     fs.readFile(filePath, (err, content) => {
-        //         if(err) return callback(err)
-        //         const rendered = content.toString()
-        //             .replace("#title#", `<title>${options["title"]}</title>`)
-        //             .replace("#message#", `<H1>${options["message"]}</H1>`)
-        //         return callback(null, rendered);
-        //     })
-        // })
-        // this.app.set('views', "./test/views")
-        // this.app.set('view engine', 'ntl')
-
-        // TODO
-        // const viewConfig = {
-        //     "engine" : "mustache",
-        //     "path": "/test/views",
-        //     "suffix": "html"
-        // }
-
-        // this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
-        // this.app.set("view engine", viewConfig["suffix"]);
-        // this.app.set("views", process.cwd() + viewConfig["path"])
+        
+        const viewConfig = {
+            "engine": "mustache",
+            "path": "/test/views",
+            "suffix": "html"
+        }
+        this.app.engine(viewConfig["suffix"], consolidate[viewConfig["engine"]]);
+        this.app.set("view engine", viewConfig["suffix"]);
+        this.app.set("views", process.cwd() + viewConfig["path"]);
 
 
         this.app.listen(port, () => {
