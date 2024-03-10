@@ -1,38 +1,34 @@
-// TODO
-// import { AuthenticationFactory, bean, config } from "../../src/typespeed";
-// import { expressjwt, GetVerificationKey } from "express-jwt";
-// import * as jwt from 'jsonwebtoken';
+import { GetVerificationKey, expressjwt } from "express-jwt";
+import AuthenticationFactory from "../../src/factory/authentication-factory.class";
+import {bean, config} from "../../src/typespeed";
+import * as jwt from 'jsonwebtoken';
 
-// const jwtConfig: {
-//     secret: jwt.Secret | GetVerificationKey;
-//     algorithms: jwt.Algorithm[];
-//     ignore: string[];
-// } = config("jwt");
+const jwtConfig: {
+  secret: jwt.Secret | GetVerificationKey;
+  algorithms: jwt.Algorithm[];
+  ignore: string[]
+} = config("jwt");
 
-// export default class JwtAuthentication extends AuthenticationFactory{
 
-//   @bean
-//   public getAuthentication(): AuthenticationFactory{
-//     return new JwtAuthentication;
-//   }
+export default class JwtAuthentication extends AuthenticationFactory {
 
-//   // 前置拦截器
-//   preHandle(req, res, next) {
-//     if(!jwtConfig.ignore.includes(req.path)){
-//       // 不在忽略的路径上面才检查
-//       const jwtMiddleware = expressjwt(jwtConfig);
-//       jwtMiddleware(req, res, (err) => {
-//         if(err) {
-//           //没有通过jwt检查
-//           next(err)
-//         }else{
-//           // 已经通过检查
-//           next();
-//         }
-//       })
-//     }
-//     // 忽略的页面放行
-//     next();
+  @bean
+  getJwtAuthentication(): AuthenticationFactory {
+    return new JwtAuthentication();
+  }
 
-//   }
-// }
+  preHandle(req, res, next) {
+    if(!jwtConfig.ignore.includes(req.path)) {
+      // 不在忽略的路径数组里，才需要拦截
+      const jwtMiddleware = expressjwt(jwtConfig);
+      jwtMiddleware(req, res, (err) => {
+        if(err) {
+          next(err); // 不能通过jwt检查，已经被拦截
+        }else{
+          next(); // 通过jwt检查，放行
+        }
+      })
+    }
+    next(); // 放行
+  }
+}

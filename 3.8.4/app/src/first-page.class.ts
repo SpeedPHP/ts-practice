@@ -1,3 +1,4 @@
+import { GetMapping } from "2.3.3/src/route-mapping.decorator";
 import { component, getMapping, value } from "../../src/typespeed";
 import * as jwttoken from "jsonwebtoken";
 
@@ -5,7 +6,7 @@ import * as jwttoken from "jsonwebtoken";
 export default class FirstPage {
 
     @value("jwt.secret")
-    private secret:string;
+    private secret: string;
 
     @getMapping("/")
     public index(req: any, res: any) {
@@ -20,9 +21,14 @@ export default class FirstPage {
 
     @getMapping("/login")
     login() {
+      // 登录逻辑，检查校验
+
+
+      // 已经登录成功
       const token = jwttoken.sign({
-        user: 'myname'
+        user: "myname"
       }, this.secret);
       return token;
     }
+
 }
