@@ -34,14 +34,14 @@ function mapperFunction(method: string, value: string) {
       "invoker": async (req, res, next) => {
         const routerBean = getComponent(target.constructor);
         try {
-          // TODO
-          //let paramTotal = routerBean[propertyKey].length;
+          let paramIndex = routerBean[propertyKey].length;
           const args = [req, res, next];
-          // for(let i = 0; i < paramTotal; i++) {
-          //   if(routerParams[[target.constructor.name, propertyKey, i].toString()]){
-          //     args[i] = routerParams[[target.constructor.name, propertyKey, i].toString()](req,res,next);
-          //   }
-          // }
+          for(let i = 0; i < paramIndex; i++) {
+            const key = [target.constructor.name, propertyKey, i].toString();
+            if(routerParams[key]){
+              args[i] = routerParams[key](req, res, next);
+            }
+          }
 
           const testResult = await routerBean[propertyKey].apply(routerBean, args);
           if (typeof testResult === "object") {
@@ -90,10 +90,6 @@ function before(constructorFunction, methodName: string) {
   const targetBean = getComponent(constructorFunction);
   return function (target, propertyKey: string) {
       const currentMethod = targetBean[methodName];
-      // 检查方法参数的个数，并记录以备参数装饰器使用
-      if(currentMethod.length > 0){
-        //routerParamsTotal[[constructorFunction.name, methodName].toString()] = currentMethod.length;
-      }
       Object.assign(targetBean, {
           [methodName]: function (...args) {
               target[propertyKey](...args);
@@ -108,9 +104,6 @@ function after(constructorFunction, methodName: string) {
   const targetBean = getComponent(constructorFunction);
   return function (target, propertyKey: string) {
       const currentMethod = targetBean[methodName];
-      if(currentMethod.length > 0){
-        //routerParamsTotal[[constructorFunction.name, methodName].toString()] = currentMethod.length;
-      }
       Object.assign(targetBean, {
           [methodName]: function (...args) {
               const result = currentMethod.apply(targetBean, args);
@@ -121,46 +114,44 @@ function after(constructorFunction, methodName: string) {
   };
 }
 
-// const routerParams = {};
-// function req(target, propertyKey, parameterIndex) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   routerParams[key] = (req, res, next) => req;
-// }
-
-// function res(target, propertyKey, parameterIndex) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   routerParams[key] = (req, res, next) => res;
-// }
-
-// function getParamInFunction(fn: Function, index: number) {
-//   const code = fn.toString().replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg, '').replace(/=>.*$/mg, '').replace(/=[^,]+/mg, '');
-//   const result = code.slice(code.indexOf('(') + 1, code.indexOf(')')).match(/([^\s,]+)/g);
-//   return result[index] || null;
-// }
-
-// function reqQuery(target, propertyKey, parameterIndex) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   const paramName = getParamInFunction(target[propertyKey], parameterIndex);
-//   routerParams[key] = (req, res, next) => req.query[paramName];
-// }
-
-// function reqBody(target, propertyKey, parameterIndex) {
-//   const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//   routerParams[key] = (req, res, next) => req.body;
-// }
-
-// function reqForm(paramName) {
-//   return function(target, propertyKey, parameterIndex) {
-//     const key = [target.constructor.name, propertyKey, parameterIndex].toString();
-//     routerParams[key] = (req, res, next) => req.body[paramName];
-//   }
-// }
 
 const getMapping = (value: string) => mapperFunction("get", value);
 const postMapping = (value: string) => mapperFunction("post", value);
 const requestMapping = (value: string) => mapperFunction("all", value);
 
-export {   before, after, getMapping, postMapping, requestMapping, setRouter, upload, jwt,
-  //req, reqQuery, res, reqBody
+const routerParams = {};
+function req(target, propertyKey, parameterIndex) {
+  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+  routerParams[key] = (req, res, next) => req;
+}
 
-};
+function res(target, propertyKey, parameterIndex) {
+  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+  routerParams[key] = (req, res, next) => res;
+}
+
+function reqBody(target, propertyKey, parameterIndex) {
+  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+  routerParams[key] = (req, res, next) => req.body;
+}
+
+function reqForm(paramName) {
+  return (target, propertyKey, parameterIndex) => {
+    const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+    routerParams[key] = (req, res, next) => req.body[paramName];
+  }
+}
+
+function reqQuery(target, propertyKey, parameterIndex) {
+  const key = [target.constructor.name, propertyKey, parameterIndex].toString();
+  const paramName = getParamInFunction(target[propertyKey], parameterIndex);
+  routerParams[key] = (req, res, next) => req.query[paramName];
+}
+
+function getParamInFunction(fn: Function, index: number) {
+  const code = fn.toString().replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg, '').replace(/=>.*$/mg, '').replace(/=[^,]+/mg, '');
+  const result = code.slice(code.indexOf('(') + 1, code.indexOf(')')).match(/([^\s,]+)/g);
+  return result[index] || null;
+}
+
+export {   before, after, getMapping, postMapping, requestMapping, setRouter, upload, jwt, reqQuery, req, res, reqForm, reqBody};
