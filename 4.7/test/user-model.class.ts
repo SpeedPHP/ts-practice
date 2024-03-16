@@ -1,21 +1,15 @@
 import {Model} from "../src/database/orm-decorator";
-import { log } from "../src/speed";
+import {log, component} from "../src/speed";
 
-export default class UserModel extends Model {
 
-    // TODO
-    // public async getUsers() {
-    //     const users = await this.findAll({
-    //         id: { $lt: 10, $lte: 20 }, "name": { $like: "%a%" },
-    //         $or: [{ id: 1 }, { id: 2 }]
-    //     });
-    //     log("users", users);
-    //     return "getUsers";
-    // }
+export default class UserModel extends Model{
 
-    // public async getUser(id: number) {
-    //     const user = await this.find({ id : id });
-    //     log("user", user);
-    //     return "getUser";
-    // }
+    async getUsers() {
+        const users = await this.findAll({
+            id: {$lt: 10, $lte: 43}, "name": {$like : "%a%"},
+            $or: [{id : 1}, {id : 3}]
+        });
+        log(users)
+        return "getUsers";
+    }
 }
