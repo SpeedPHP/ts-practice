@@ -1,5 +1,5 @@
-// TODO
-// export default abstract class DataSourceFactory {
-//     public abstract readConnection();
-//     public abstract writeConnection();
-// }
+
+export default abstract class DataSrouceFactory{
+  abstract readConnection();
+  abstract writeConnection();
+}

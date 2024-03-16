@@ -1,7 +1,7 @@
 import { ResultSetHeader, createPool } from 'mysql2';
 import { log, getBean,config } from './speed';
 import CacheFactory from './factory/cache-factory.class';
-//import DataSourceFactory from './factory/data-source-factory.class';
+import DataSourceFactory from './factory/data-source-factory.class';
 const pool = createPool(config("mysql")).promise();
 
 const paramMetadataKey = Symbol('param');
@@ -89,21 +89,17 @@ async function queryForExecute(sql: string, args: any[], target, propertyKey: st
     const [newSql, sqlValues] = convertSQLParams(sql, target, propertyKey, args);
     return actionExecute(newSql, sqlValues);
 }
-// SQL执行函数
-// TODO
-// async function actionExecute(newSql, sqlValues): Promise<ResultSetHeader> {
-//     const writeConnection = await getBean(DataSourceFactory).writeConnection();
-//     const [result] = await writeConnection.query(newSql, sqlValues);
-//     return <ResultSetHeader>result;
-// }
+
 
 async function actionExecute(newSql, sqlValues): Promise<ResultSetHeader> {
-    const [result] = await pool.query(newSql, sqlValues);
+    const writeConnection = await getBean(DataSourceFactory).writeConnection();
+    const [result] = await writeConnection.query(newSql, sqlValues);
     return <ResultSetHeader>result;
 }
 
 async function actionQuery(newSql, sqlValues, dataClassType?) {
-    const [rows] = await pool.query(newSql, sqlValues);
+    const readConnection = await getBean(DataSourceFactory).readConnection();
+    const [rows] = await readConnection.query(newSql, sqlValues);
     if (rows === null || Object.keys(rows).length === 0 || !dataClassType) {
         return rows;
     }
@@ -120,30 +116,6 @@ async function actionQuery(newSql, sqlValues, dataClassType?) {
     return records;
 }
 
-// TODO
-// SQL查询函数
-// async function actionQuery(newSql, sqlValues, dataClassType?) {
-//     // 获取读库连接
-//     const readConnection = await getBean(DataSourceFactory).readConnection();
-//     // 查询
-//     const [rows] = await readConnection.query(newSql, sqlValues);
-//     if (rows === null || Object.keys(rows).length === 0 || !dataClassType) {
-//         return rows;
-//     }
-//     // 循环赋值给数据类
-//     const records = [];
-//     for (const rowIndex in rows) {
-//         const entity = new dataClassType();
-//         Object.getOwnPropertyNames(entity).forEach((propertyRow) => {
-//             // 匹配数据类的属性和结果字段
-//             if (rows[rowIndex].hasOwnProperty(propertyRow)) {
-//                 Object.defineProperty(entity, propertyRow, Object.getOwnPropertyDescriptor(rows[rowIndex], propertyRow));
-//             }
-//         });
-//         records.push(entity);
-//     }
-//     return records;
-// }
 
 function convertSQLParams(decoratorSQL: string, target: any, propertyKey: string, args: any[]): [string, any[]] {
     const queryValues = [];

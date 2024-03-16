@@ -82,7 +82,6 @@ export default class ExpressServer extends ServerFactory {
             this.app.use(compression(this.compression));
         }
 
-        this.app.use(cookieParser(this.cookieConfig["secret"] || undefined, this.cookieConfig["options"] || {}));
 
 
         setRouter(this.app);
