@@ -1,24 +1,19 @@
-import { resource, getMapping,value, component } from "../../src/typespeed";
-//import { SocketIo } from "../../src/typespeed";
+import { resource, getMapping, log, component, SocketIo } from "../../src/typespeed";
 @component
 export default class TestIo {
-    // TODO
-    // 注入Socket.IO对象
-    // @resource()
-    // public socketIo: SocketIo;
 
-    // // 测试接收事件
-    // @SocketIo.onEvent("test")
-    // public connection(socket, message) {
-    //     console.log(message);
-    //     // 使用两种方式发送广播
-    //     this.socketIo.sockets.emit("test","test-from-server2");
-    //     socket.emit("test", "test-from-server3");
-    // }
+    @resource()
+    socketIo: SocketIo;
 
-    // // 显示页面
-    // @getMapping("/socketIo")
-    // public socketIoPage(req, res) {
-    //     res.render("socket");
-    // }
+    @SocketIo.onEvent("test")
+    connection(socket, message) {
+        log(message)
+        this.socketIo.sockets.emit("test", "test-from-server-2");
+        socket.emit("test", "test-from-server-3");
+    }
+
+    @getMapping("/socket.html")
+    socketPage(req, res) {
+        res.render("socket");
+    }
 }

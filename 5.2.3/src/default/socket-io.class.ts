@@ -1,40 +1,31 @@
-// import { Server as IoServer } from "socket.io";
-// TODO
-// // 创建Socket.IO对象
-// const ioObj:IoServer = new IoServer({
-//     cors: {
-//       origin: "http://localhost:8080"
-//     }
-//   });
+import {log} from "../core.decorator";
+import {Server as IoServer} from "socket.io";
 
-// class SocketIo extends IoServer {
+const ioObj: IoServer = new IoServer ({
+  cors: {
+    origin: "http://localhost:8080"
+  }
+});
 
-//     constructor() {
-//         super();
-//         return ioObj;
-//     }
+class SocketIo extends IoServer {
+  constructor() {
+    super();
+    return ioObj;
+  }
 
-//     // 监听事件的装饰器
-//     public static onEvent(event: string) {
-//         console.log("onEvent");
-//         return (target: any, propertyKey: string) => {
-//             console.log("onEvent-callback");
-//             ioObj.on("connection", (socket) => {
-//                 console.log("onEvent-connection")
-//                 // 监听事件
-//                 socket.on(event, (message) => {
-//                     console.log("onEvent-socket",event, message)
-//                     ioObj.emit("test", "test-from-server1");
-//                     target[propertyKey](socket, message);
-//                 });
-//             });
-//             // 启动Socket.IO服务
-//             ioObj.listen(8085);
-//         }
-//     }
+  public static onEvent(event) {
+    return (target, propertyKey) => {
+      ioObj.on("connection", (socket) => {
+        log("Connected");
+        socket.on(event, (message) => {
+          log("On Event", event);
+          ioObj.emit("test", "test-from-server-1");
+          target[propertyKey](socket, message);
+        })
+      })
+      ioObj.listen(8085);
+    }
+  }
+}
 
-
-
-// }
-
-// export { SocketIo }
+export {SocketIo}
