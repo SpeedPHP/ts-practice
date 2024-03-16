@@ -1,4 +1,9 @@
 {
+    "view": {
+        "engine": "mustache",
+        "path": "./views",
+        "suffix": "html"
+    },
     "mysql": {
         "host":"localhost", 
         "user": "root", 
