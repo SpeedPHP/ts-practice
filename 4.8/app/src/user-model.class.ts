@@ -15,8 +15,7 @@ export default class UserModel extends Model {
 
     async getUser(id: number) {
         const user = await this.find({ id: id }, "id asc", "*");
-        log("user", user);
-        return "getUser";
+        return user;
     }
 
     async newUsers() {
@@ -29,13 +28,18 @@ export default class UserModel extends Model {
         return newId;
     }
 
+    async count():Promise<number> {
+        const result = await this.findCount("1");
+        return result;
+    }
+
     async remove(id: number) {
         const result = await this.delete({ id: id });
         return "remove rows: " + result;
     }
 
-    async count():Promise<number> {
-        const result = await this.findCount("1");
+    async login(id: number) {
+        const result = await this.incr({ id: id }, "login_count");
         return result;
     }
 
