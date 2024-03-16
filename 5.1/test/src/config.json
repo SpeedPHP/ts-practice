@@ -1,21 +1,4 @@
 {
-
-    "mysql": {
-        "master": {
-            "host": "localhost",
-            "user": "root",
-            "password": "root",
-            "database": "test"
-        },
-        "slave": [
-            {
-                "host": "localhost",
-                "user": "root",
-                "password": "root",
-                "database": "test"
-            }
-        ]
-    },
     "rabbitmq": {
         "protocol": "amqp",
         "hostname": "127.0.0.1",
