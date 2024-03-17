@@ -141,15 +141,15 @@ function handleRealType(realType: any, callback: Function) {
             handleComponent(realType);
             callback(ApiItem.fromType("$ref", realType.name));
         } else {
-            callback(ApiItem.fromType(realType.name.toLowerCase()));
+            callback(ApiItem.fromType(realType.name.toLowerCase())); // object -> OBJECT
         }
-    } else if (realType["TΦ"] === 'V') {
+    } else if (realType["TΦ"] === 'V') { // void
         callback();
-    } else if (realType["TΦ"] === 'O') {
+    } else if (realType["TΦ"] === 'O') { // {}
         callback(ApiItem.fromType("object"));
-    } else if (realType["TΦ"] === '~') {
+    } else if (realType["TΦ"] === '~') { // string
         callback(ApiItem.fromType("string"));
-    } else if (realType["TΦ"] === '[') {
+    } else if (realType["TΦ"] === '[') { // 数组
         const deepRealType = realType["e"];
         if (/^class\s/.test(deepRealType.toString())) {
             handleComponent(deepRealType);
