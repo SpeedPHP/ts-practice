@@ -48,7 +48,7 @@
     "jsonwebtoken": "^8.5.1",
     "multiparty": "^4.2.3",
     "mustache": "^4.2.0",
-    "mysql2": "^3.9.3",
+    "mysql2": ">=3.9.7",
     "node-cache": "^5.1.2",
     "reflect-metadata": "^0.1.13",
     "serve-favicon": "^2.5.0",
